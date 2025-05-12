@@ -1,0 +1,21 @@
+@font-face {
+    font-family: 'The SeaSons';
+    src: url('/Fonts/TheSeaSons.ttf') format('truetype');
+}
+body {
+
+    background-color: #004224;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    font-family: 'The Seasons';
+}
+
+h1, h2, h3 {
+    color: #423a26;
+}
+
+a {
+    color: #2aee13;
+    text-decoration: none;
+}

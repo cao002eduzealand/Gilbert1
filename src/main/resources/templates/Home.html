@@ -2,105 +2,167 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>gilbert</title>
+  <title>Gilbert's Shop</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: "The SeaSons", SeaSons, sans-serif;
+    @font-face {
+      font-family: 'TheSeaSons';
+      src: url('/Fonts/TheSeaSons.ttf');
     }
 
-    .top-buttons {
+    body {
+      margin: 0;
+      font-family: 'TheSeaSons', sans-serif;
+      background-color: white;
+    }
+
+    /* --- DESKTOP NAVIGATION --- */
+    .desktop-nav {
       display: flex;
-      justify-content: space-around;
+      justify-content: center;
+      align-items: center;
       background-color: #004224;
+      height: 60px;
+      padding: 0 20px;
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       z-index: 1000;
-      height: 50px; /* Fix the height of the top buttons bar */
-      overflow: hidden; /* Ensures no overflow */
     }
 
-    .top-buttons a {
-      flex: 1;
-      text-align: center;
-      text-decoration: none;
-      color: #f8f0e5;
-      font-size: 16px;
-      line-height: 50px; /* Vertically center text */
-      border-left: 2px solid #423a26; /* Border between buttons */
-      border-radius: 0;
-      background-color: #004224; /* Match the background color */
-      box-sizing: border-box;
-    }
-
-    .top-buttons a:first-child {
-      border-left: none; /* Remove left border for the first button */
-    }
-
-    .content {
-      padding: 70px 20px 20px; /* Leave space for fixed nav */
-    }
-
-    @media (max-width: 768px) {
-      .top-buttons {
-        top: unset;
-        bottom: 0;
-        border-top: 1px solid #ccc;
-        border-bottom: none;
-      }
-
-      .content {
-        padding-top: 20px;
-        padding-bottom: 70px;
-      }
-    }
-
-
-    .search-bar {
+    .nav-left,
+    .nav-right {
       display: flex;
       align-items: center;
-      justify-content: flex-start; /* Align left */
+      gap: 15px;
+      width: 30%;
+    }
+
+    .nav-left {
+      justify-content: flex-start;
+    }
+
+    .nav-right {
+      justify-content: flex-end;
+    }
+
+    .nav-center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 40%;
+    }
+
+    .desktop-nav a {
+      color: #f8f0e5;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    .desktop-nav a:hover {
+      background-color: #423a26;
+      border-radius: 6px;
+      padding: 4px 8px;
+      transition: 0.2s;
     }
 
     .search-bar input {
       height: 30px;
       padding: 5px;
-      width: 300px;
+      width: 250px;
       font-size: 14px;
-      border: 1px solid #ccc;
+      border: 0px solid #ccc;
       border-radius: 5px;
-      margin-left: 10px; /* Space between the search input and home button */
-      background-color: #fff;
+    }
+
+    /* --- INDHOLD --- */
+    .content {
+      margin-top: 80px;
+      padding: 40px 20px;
+      background-color: white;
+      text-align: center;
+    }
+
+    .content h1 {
+      color: #004224;
+      font-size: 36px;
+    }
+
+    .content p {
+      color: #423a26;
+      font-size: 18px;
+    }
+
+    /* --- MOBIL NAVIGATION --- */
+    .mobile-nav {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .desktop-nav {
+        display: none;
+      }
+
+      .mobile-nav {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        background-color: #004224;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        z-index: 1000;
+      }
+
+      .mobile-nav a img {
+        height: 24px;
+      }
+
+      .content {
+        margin-top: 20px;
+        margin-bottom: 80px;
+      }
     }
   </style>
 </head>
 <body>
 
-<div class="top-buttons">
-
-
-  <div class="search-bar">
-    <form action="/search" method="get">
+<!-- Desktop navigation -->
+<div class="desktop-nav">
+  <div class="nav-left">
+    <form action="/search" method="get" class="search-bar">
       <input type="text" name="query" placeholder="Search..."/>
     </form>
+    <a href="/favourites">Favourites</a>
   </div>
 
-  <a href="/favourites">Favourites</a>
+  <div class="nav-center">
+    <a href="/"><img src="/Images/Gilbert.png" alt="Home" style="height: 36px;"></a>
+  </div>
 
-  <a href="/">
-    <img src="/gilbert.png" alt="Home" style="height: 24px;">
-  </a>
-  <a href="/sell">Me/Sell</a>
-  <a href="/notifications">Notifications</a>
+  <div class="nav-right">
+    <a href="/sell">Me/Sell</a>
+    <a href="/notifications">Notifications</a>
+  </div>
 </div>
 
+<!-- Indhold -->
 <div class="content">
   <h1>Welcome to Gilbert's Shop</h1>
   <p>Start shopping now!</p>
+</div>
+
+<!-- Mobil navigation -->
+<div class="mobile-nav">
+  <a href="/"><img src="/Images/Home.png" alt="Home"/></a>
+  <a href="/search"><img src="/Images/Search.png" alt="Search"/></a>
+  <a href="/favourites"><img src="/Images/Heart.png" alt="Favourites"/></a>
+  <a href="/sell"><img src="/Images/Profile.png" alt="Me/Sell"/></a>
+  <a href="/notifications"><img src="/Images/Bell.png" alt="Notifications"/></a>
 </div>
 
 </body>
