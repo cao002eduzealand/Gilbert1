@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>gilbert</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "The SeaSons", SeaSons, sans-serif;
+    }
+
+    .top-buttons {
+      display: flex;
+      justify-content: space-around;
+      background-color: #004224;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      height: 50px; /* Fix the height of the top buttons bar */
+      overflow: hidden; /* Ensures no overflow */
+    }
+
+    .top-buttons a {
+      flex: 1;
+      text-align: center;
+      text-decoration: none;
+      color: #f8f0e5;
+      font-size: 16px;
+      line-height: 50px; /* Vertically center text */
+      border-left: 2px solid #423a26; /* Border between buttons */
+      border-radius: 0;
+      background-color: #004224; /* Match the background color */
+      box-sizing: border-box;
+    }
+
+    .top-buttons a:first-child {
+      border-left: none; /* Remove left border for the first button */
+    }
+
+    .content {
+      padding: 70px 20px 20px; /* Leave space for fixed nav */
+    }
+
+    @media (max-width: 768px) {
+      .top-buttons {
+        top: unset;
+        bottom: 0;
+        border-top: 1px solid #ccc;
+        border-bottom: none;
+      }
+
+      .content {
+        padding-top: 20px;
+        padding-bottom: 70px;
+      }
+    }
+
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start; /* Align left */
+    }
+
+    .search-bar input {
+      height: 30px;
+      padding: 5px;
+      width: 300px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-left: 10px; /* Space between the search input and home button */
+      background-color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-buttons">
+
+
+  <div class="search-bar">
+    <form action="/search" method="get">
+      <input type="text" name="query" placeholder="Search..."/>
+    </form>
+  </div>
+
+  <a href="/favourites">Favourites</a>
+
+  <a href="/">
+    <img src="/gilbert.png" alt="Home" style="height: 24px;">
+  </a>
+  <a href="/sell">Me/Sell</a>
+  <a href="/notifications">Notifications</a>
+</div>
+
+<div class="content">
+  <h1>Welcome to Gilbert's Shop</h1>
+  <p>Start shopping now!</p>
+</div>
+
+</body>
+</html>
