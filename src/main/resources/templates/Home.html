@@ -11,6 +11,17 @@
       src: url('/Fonts/TheSeaSons.ttf');
     }
 
+    .lock-head{
+    position: sticky;
+      top: 60px;
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid #423a26;
+      margin-top: 10px;
+    }
+
     body {
       margin: 0;
       font-family: 'TheSeaSons', sans-serif;
@@ -72,9 +83,10 @@
       height: 30px;
       padding: 5px;
       width: 250px;
-      font-size: 14px;
+      font-size: 16px;
       border: 0px solid #ccc;
-      border-radius: 5px;
+      border-radius: 0px;
+      font-weight: 500;
     }
 
     /* --- INDHOLD --- */
@@ -152,8 +164,11 @@
 
 <!-- Indhold -->
 <div class="content">
+  <div class="lock-head">
   <h1>Welcome to Gilbert's Shop</h1>
   <p>Start shopping now!</p>
+    <hr class="section-divider">
+</div>
 </div>
 
 <!-- Mobil navigation -->
