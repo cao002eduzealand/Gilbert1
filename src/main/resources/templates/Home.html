@@ -11,30 +11,19 @@
       src: url('/Fonts/TheSeaSons.ttf');
     }
 
-    .lock-head{
-    position: sticky;
-      top: 60px;
-    }
-
-    .section-divider {
-      border: none;
-      border-top: 1px solid #423a26;
-      margin-top: 10px;
-    }
-
     body {
       margin: 0;
       font-family: 'TheSeaSons', sans-serif;
-      background-color: white;
+      background-color: #f8f0e5;
     }
 
-    /* --- DESKTOP NAVIGATION --- */
+    /* === FIXED NAVIGATION === */
     .desktop-nav {
       display: flex;
       justify-content: center;
       align-items: center;
       background-color: #004224;
-      height: 60px;
+      height: 90px;
       padding: 0 20px;
       position: fixed;
       top: 0;
@@ -43,8 +32,7 @@
       z-index: 1000;
     }
 
-    .nav-left,
-    .nav-right {
+    .nav-left, .nav-right {
       display: flex;
       align-items: center;
       gap: 15px;
@@ -84,30 +72,59 @@
       padding: 5px;
       width: 250px;
       font-size: 16px;
-      border: 0px solid #ccc;
-      border-radius: 0px;
+      border: none;
+      border-radius: 35px;
       font-weight: 500;
     }
 
-    /* --- INDHOLD --- */
+
+
+    /* === CATEGORY BAR === */
+    .category-bar {
+      background-color: #f8f0e5;
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      padding: 20px;
+      border-bottom: 1px solid #423a26;
+      position: fixed;
+      top: 90px;
+      left: 0;
+      right: 0;
+      z-index: 999;
+    }
+
+    .category-bar a {
+      color: #004224;
+      font-size: 20px;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: background-color 0.2s ease;
+    }
+
+    .category-bar a:hover {
+      background-color: #423a26;
+      color: #f8f0e5;
+    }
+
+    /* === MAIN CONTENT === */
     .content {
-      margin-top: 80px;
-      padding: 40px 20px;
-      background-color: white;
+      padding-top: 180px; /* 90 nav + 70 category + 20 ekstra spacing */
       text-align: center;
     }
 
     .content h1 {
       color: #004224;
-      font-size: 36px;
+      font-size: 48px;
     }
 
     .content p {
       color: #423a26;
-      font-size: 18px;
+      font-size: 20px;
     }
 
-    /* --- MOBIL NAVIGATION --- */
+    /* === MOBILE NAVIGATION === */
     .mobile-nav {
       display: none;
     }
@@ -115,6 +132,13 @@
     @media (max-width: 768px) {
       .desktop-nav {
         display: none;
+      }
+
+      .category-bar {
+        top: 0;
+        flex-wrap: wrap;
+        gap: 20px;
+        font-size: 14px;
       }
 
       .mobile-nav {
@@ -135,15 +159,15 @@
       }
 
       .content {
-        margin-top: 20px;
-        margin-bottom: 80px;
+        padding-top: 100px;
+        padding-bottom: 80px;
       }
     }
   </style>
 </head>
 <body>
 
-<!-- Desktop navigation -->
+<!-- DESKTOP NAVIGATION -->
 <div class="desktop-nav">
   <div class="nav-left">
     <form action="/search" method="get" class="search-bar">
@@ -153,7 +177,7 @@
   </div>
 
   <div class="nav-center">
-    <a href="/"><img src="/Images/Gilbert.png" alt="Home" style="height: 36px;"></a>
+    <a href="/"><img src="/Images/Gilbert.png" alt="Home" style="height: 75px;"></a>
   </div>
 
   <div class="nav-right">
@@ -162,22 +186,28 @@
   </div>
 </div>
 
-<!-- Indhold -->
-<div class="content">
-  <div class="lock-head">
-  <h1>Welcome to Gilbert's Shop</h1>
-  <p>Start shopping now!</p>
-    <hr class="section-divider">
-</div>
+<!-- CATEGORY BAR -->
+<div class="category-bar">
+  <a href="#">Women</a>
+  <a href="#">Men</a>
+  <a href="#">Designers</a>
+  <a href="#">Home</a>
+  <a href="#">Beauty</a>
 </div>
 
-<!-- Mobil navigation -->
+<!-- MAIN CONTENT -->
+<div class="content">
+  <h1>GILBERT'S</h1>
+  <div style="height: 1200px;"></div>
+</div>
+
+<!-- MOBILE NAVIGATION -->
 <div class="mobile-nav">
-  <a href="/"><img src="/Images/Home.png" alt="Home"/></a>
-  <a href="/search"><img src="/Images/Search.png" alt="Search"/></a>
-  <a href="/favourites"><img src="/Images/Heart.png" alt="Favourites"/></a>
-  <a href="/sell"><img src="/Images/Profile.png" alt="Me/Sell"/></a>
-  <a href="/notifications"><img src="/Images/Bell.png" alt="Notifications"/></a>
+  <a href="/"><img src="/Images/Home.svg" alt="Home"/></a>
+  <a href="/search"><img src="/Images/Search.svg" alt="Search"/></a>
+  <a href="/favourites"><img src="/Images/Heart.svg" alt="Favourites"/></a>
+  <a href="/sell"><img src="/Images/Profile.svg" alt="Me/Sell"/></a>
+  <a href="/notifications"><img src="/Images/Bell.svg" alt="Notifications"/></a>
 </div>
 
 </body>
