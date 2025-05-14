@@ -21,6 +21,36 @@ public class User {
     private Role role;
     private Company company;
 
+
+    public User() {}
+
+    public User(int id, String fName, String lname, String displayName, String userName, String email, String password, String profilePictureURL, Timestamp createdAt,
+                Timestamp lastLogin, String address, String ZIP, String city, String country, Role role, Company company) {
+        this.id = id;
+        this.fName = fName;
+        this.lName = lname;
+        this.displayName = displayName;
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+        this.profilePictureURL = profilePictureURL;
+        this.createdAt = createdAt;
+        this.lastLogin = lastLogin;
+        this.address = address;
+        this.ZIP = ZIP;
+        this.city = city;
+        this.country = country;
+        this.role = role;
+        this.company = company;
+    }
+
+
+
+
+
+
+
+
     public int getId() {return id;}
     public String getfName() {return fName;}
     public String getlName() {return lName;}
