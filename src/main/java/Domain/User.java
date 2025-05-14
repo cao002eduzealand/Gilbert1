@@ -14,6 +14,7 @@ public class User {
     private String profilePictureURL;
     private Timestamp createdAt;
     private Timestamp lastLogin;
+    private String shippingName;
     private String address;
     private String ZIP;
     private String city;
@@ -25,7 +26,7 @@ public class User {
     public User() {}
 
     public User(int id, String fName, String lname, String displayName, String userName, String email, String password, String profilePictureURL, Timestamp createdAt,
-                Timestamp lastLogin, String address, String ZIP, String city, String country, Role role, Company company) {
+                Timestamp lastLogin, String shippingName, String address, String ZIP, String city, String country, Role role, Company company) {
         this.id = id;
         this.fName = fName;
         this.lName = lname;
@@ -36,6 +37,7 @@ public class User {
         this.profilePictureURL = profilePictureURL;
         this.createdAt = createdAt;
         this.lastLogin = lastLogin;
+        this.shippingName = shippingName;
         this.address = address;
         this.ZIP = ZIP;
         this.city = city;
@@ -61,6 +63,7 @@ public class User {
     public String getProfilePictureURL() {return profilePictureURL;}
     public Timestamp getCreatedAt() {return createdAt;}
     public Timestamp getLastLogin() {return lastLogin;}
+    public String getShippingName() {return shippingName;}
     public String getAddress() {return address;}
     public String getZIP() {return ZIP;}
     public String getCity() {return city;}
@@ -79,6 +82,7 @@ public class User {
     public void setProfilePictureURL(String profilePictureURL) {this.profilePictureURL = profilePictureURL;}
     public void setCreatedAt(Timestamp createdAt) {this.createdAt = createdAt;}
     public void setLastLogin(Timestamp lastLogin) {this.lastLogin = lastLogin;}
+    public void setShippingName(String shippingName) {this.shippingName = shippingName;}
     public void setAddress(String address) {this.address = address;}
     public void setZIP(String ZIP) {this.ZIP = ZIP;}
     public void setCity(String city) {this.city = city;}
