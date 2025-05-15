@@ -1,6 +1,8 @@
 package Infrastructure;
 
 import Domain.*;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -128,6 +130,24 @@ public class UserRepositoryImpl implements CrudRepository<User> {
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email);
         return count != null && count > 0;
     }
+
+    public User authenticateUser(String username, String password){
+        String sql = "SELECT * FROM user WHERE username=? AND password=?";
+    try {
+
+        User user =  jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(User.class), username);
+
+        if (BCrypt.checkpw(password, user.getPassword())) {
+            return user;
+        } else {
+            throw new InvalidCredentialsException("Username or password incorrect");
+        }
+
+    } catch( EmptyResultDataAccessException e){
+        throw new InvalidCredentialsException("Username or password is incorrect");
+        }
+    }
+
 
 
 

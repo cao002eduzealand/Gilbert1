@@ -25,6 +25,8 @@ public class UserServiceImpl implements ServiceInterface<User> {
     @Override
     public void delete(int id){repository.delete(id);}
 
+    public User authenticeUser(String username, String password){return repository.authenticateUser(username, password);}
+
     //public List<Product> getProductsByUser(User user){return repository.getProductsByUser(user);}
 
     public User findById(int id) {return repository.findById(id);}
