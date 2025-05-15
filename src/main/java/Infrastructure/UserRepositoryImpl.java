@@ -1,6 +1,6 @@
 package Infrastructure;
 
-import Domain.User;
+import Domain.*;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 @Repository
@@ -24,11 +26,19 @@ public class UserRepositoryImpl implements CrudRepository<User> {
     }
 
     @Override
-    public User save(User user) {
+    public User save(User user) throws EmailAlreadyTakenException, UsernameAlreadyTakenException{
+
+        if (emailExists(user.getEmail())) {
+            throw new EmailAlreadyTakenException("Email already exists");
+        }
+        if (usernameExists(user.getUserName())){
+            throw new UsernameAlreadyTakenException("Username already exists");
+        }
+
 
         String sql = "INSERT INTO user (fName, lName, display_name, user_name, email, password, profile_picture, created_at, last_login," +
-                " shipping_full_name, shipping_address, shipping_zip, shipping_city, shipping_country, role_id, company_id)" +
-                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )";
+                " shipping_full_name, shipping_address, shipping_zip, shipping_city, shipping_country)" +
+                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
         try(Connection connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql)){
@@ -49,14 +59,34 @@ public class UserRepositoryImpl implements CrudRepository<User> {
             preparedStatement.setString(12, user.getZIP());
             preparedStatement.setString(13, user.getCity());
             preparedStatement.setString(14, user.getCountry());
-            preparedStatement.setInt(15, user.getRole().getId());
-            preparedStatement.setInt(16, user.getCompany().getId());
 
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            int rowAffected = preparedStatement.executeUpdate();
+
+            if (rowAffected==0) {
+                throw new SQLException("Creating User Failed");
+
+            }
+            try(ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    user.setId(resultSet.getInt(1));
+
+                    Role defaultRole = new Role(1, "user");
+                    user.setRole(defaultRole);
+                    user.setCompany(null);
+
+                    return user;
+                } else {
+                    throw new SQLException("Creating User Failed");
+                }
+            }
+
+
+        }catch (SQLException e) {
+            e.printStackTrace();
+
         }
-
+        throw new RuntimeException();
     }
 
     @Override
@@ -86,6 +116,18 @@ public class UserRepositoryImpl implements CrudRepository<User> {
         return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(User.class), id);
     }
 
+
+    public boolean usernameExists(String username) {
+        String sql = "SELECT COUNT(*) FROM user WHERE username=?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, username);
+        return count != null && count > 0;
+    }
+
+    public boolean emailExists(String email) {
+        String sql = "SELECT COUNT(*) FROM user WHERE email=?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email);
+        return count != null && count > 0;
+    }
 
 
 

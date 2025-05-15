@@ -2,7 +2,6 @@ package Application;
 
 
 import Domain.User;
-import Infrastructure.ProductRepositoryImpl;
 import Infrastructure.UserRepositoryImpl;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -15,7 +14,7 @@ public class UserServiceImpl implements ServiceInterface<User> {
     public UserServiceImpl(UserRepositoryImpl repository){this.repository = repository;}
 
     @Override
-    public User save(User user){return repository.save(user);}
+    public User save(User user) {return repository.save(user);}
 
     @Override
     public List<User> findAll(){return repository.findAll();}
