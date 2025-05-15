@@ -26,9 +26,13 @@ public class ProductServiceImpl implements ServiceInterface<Product> {
     @Override
     public void delete(int id){repository.delete(id);}
 
-    public List<Product> getProductsByUser(User user){return repository.getProductsByUser(user);}
 
+
+    @Override
     public Product findById(int id) {return repository.findById(id);}
 
     public List<Product> findAllByBrand(Brand brand){return repository.findAllByBrand(brand);}
+
+    public List<Product> getProductsByUser(User user){return repository.getProductsByUser(user);}
+
 }

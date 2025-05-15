@@ -25,11 +25,11 @@ public class UserServiceImpl implements ServiceInterface<User> {
     @Override
     public void delete(int id){repository.delete(id);}
 
-    public User authenticeUser(String username, String password){return repository.authenticateUser(username, password);}
 
-    //public List<Product> getProductsByUser(User user){return repository.getProductsByUser(user);}
-
+    @Override
     public User findById(int id) {return repository.findById(id);}
+
+    public User authenticeUser(String username, String password){return repository.authenticateUser(username, password);}
 
     //public List<Product> findAllByBrand(Brand brand){return repository.findAllByBrand(brand);}
 }

@@ -1,6 +1,7 @@
 package Domain;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 public class Product {
 
@@ -9,6 +10,7 @@ public class Product {
     private ClothingArticle clothingArticle;
     private User seller;
     private ProductStatus productStatus;
+    private List<ProductImage> images;
     private ProductCondition condition;
     private String modelName;
     private String description;
@@ -18,12 +20,13 @@ public class Product {
 
     public Product() {}
     public Product(int id, Brand brand, ClothingArticle clothingArticle, User seller, ProductStatus productStatus,
-                   ProductCondition condition, String modelName, String description, double price, Timestamp dateUploaded) {
+                  List<ProductImage> images, ProductCondition condition, String modelName, String description, double price, Timestamp dateUploaded) {
         this.id = id;
         this.brand = brand;
         this.clothingArticle = clothingArticle;
         this.seller = seller;
         this.productStatus = productStatus;
+        this.images = images;
         this.condition = condition;
         this.modelName = modelName;
         this.description = description;
@@ -40,6 +43,8 @@ public class Product {
     public void setSeller(User seller) { this.seller = seller; }
     public ProductStatus getProductStatus() { return productStatus; }
     public void setProductStatus(ProductStatus productStatus) { this.productStatus = productStatus; }
+    public List<ProductImage> getImages() { return images; }
+    public void setImages(List<ProductImage> images) { this.images = images; }
     public ProductCondition getCondition() { return condition; }
     public void setCondition(ProductCondition condition) { this.condition = condition; }
     public String getModelName() { return modelName; }

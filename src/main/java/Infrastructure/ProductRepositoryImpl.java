@@ -73,7 +73,7 @@ public Product save(Product product) {
 
     public List<Product> getProductsByUser(User user){
 
-        String sql = "SELECT * FROM product where user_id = ?";
+        String sql = "SELECT * FROM product where seller_id = ?";
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Product.class), user.getId());
 
 }

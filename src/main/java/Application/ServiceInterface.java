@@ -11,6 +11,7 @@ public interface ServiceInterface<T> {
 
     void update(T entity);
     void delete(int id);
+    T findById(int id);
 
 }
 
