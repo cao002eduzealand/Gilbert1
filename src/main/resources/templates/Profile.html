@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Min Profil</title>
@@ -14,7 +14,7 @@
     body {
       margin: 0;
       font-family: 'TheSeaSons', sans-serif;
-      background-color: white;
+      background-color: #f8f0e5;
     }
 
     .profile-header {
@@ -113,9 +113,25 @@
 <body>
 
 <div class="profile-header">
-  <img src="/Images/Profile.png" alt="Profilbillede">
+  <form method="post" action="/profile/uploadImage" enctype="multipart/form-data">
+    <label for="imageUpload">
+      <!-- Hvis brugeren har et profilbillede -->
+      <img th:if="${user.profilePictureURL != null}"
+           th:src="@{${user.profilePictureURL}}"
+           alt="Profile picture"
+           style="width:120px; height:120px; border-radius:50%; object-fit:cover; cursor:pointer;" />
+
+      <!-- Hvis brugeren IKKE har et profilbillede -->
+      <img th:if="${user.profilePictureURL == null}"
+           th:src="@{/Images/Profile.png}"
+           alt="Default profile picture"
+           style="width:120px; height:120px; border-radius:50%; object-fit:cover; cursor:pointer;" />
+    </label>
+    <input type="file" id="imageUpload" name="image" accept="image/*" style="display:none" onchange="this.form.submit()" />
+  </form>
+
   <div class="profile-info">
-    <p th:text="${session.user.displayName}">Default Name</p>
+    <p class="username" th:text="${user.displayName}">Default Name</p>
     <div class="badge">PRO</div>
   </div>
 </div>
@@ -123,18 +139,18 @@
 <div class="profile-stats">
   <div>
     <span>15</span>
-    <p>Følgere</p>
+    <p>Followers</p>
   </div>
   <div>
     <span>52</span>
-    <p>Følger</p>
+    <p>Following</p>
   </div>
 </div>
 
-<div class="profile-status">Profiltype: <strong>Privat</strong></div>
+<div class="profile-status">Profile type: <strong>Private</strong></div>
 
 <div class="tab-menu">
-  <a href="#">Annoncer</a>
+  <a href="#">Listings</a>
   <a href="#">Sales</a>
   <a href="#">Orders</a>
   <a href="#">Info</a>
@@ -142,7 +158,7 @@
 </div>
 
 <div class="profile-content">
-  Her kan virksomhedens funktioner vises – f.eks. brugers annoncer, køb osv.
+  This area can display the user's listings, purchases, and other features of the shop.
 </div>
 
 </body>

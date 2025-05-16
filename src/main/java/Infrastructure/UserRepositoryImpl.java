@@ -147,6 +147,10 @@ public class UserRepositoryImpl implements CrudRepository<User> {
         throw new InvalidCredentialsException("Username or password is incorrect");
         }
     }
+    public void updateProfilePicture(int userId, String profilePictureURL) {
+        String sql = "UPDATE user SET profile_picture = ? WHERE id = ?";
+        jdbcTemplate.update(sql, profilePictureURL, userId);
+    }
 
 
 

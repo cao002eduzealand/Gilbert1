@@ -26,11 +26,22 @@ public class LoginController {
 
 
     @GetMapping("/login")
-    public String profile(HttpSession session) {
-        session.getAttribute("user");
-        if (session.getAttribute("user") == null) {
+    public String profile(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
             return "Login";
         }
+
+        model.addAttribute("user", user);
+
+        // Fallback billede hvis brugeren ikke har sat et billede
+        String profileImageURL = user.getProfilePictureURL() != null
+                ? user.getProfilePictureURL()
+                : "/Images/Profile.png";
+
+        model.addAttribute("profileImageURL", profileImageURL);
+
         return "Profile";
     }
 

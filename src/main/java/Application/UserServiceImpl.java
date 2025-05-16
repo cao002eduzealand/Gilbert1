@@ -10,8 +10,11 @@ import java.util.List;
 public class UserServiceImpl implements ServiceInterface<User> {
 
     private final UserRepositoryImpl repository;
+    private final UserRepositoryImpl userRepositoryImpl;
 
-    public UserServiceImpl(UserRepositoryImpl repository){this.repository = repository;}
+    public UserServiceImpl(UserRepositoryImpl repository, UserRepositoryImpl userRepositoryImpl){this.repository = repository;
+        this.userRepositoryImpl = userRepositoryImpl;
+    }
 
     @Override
     public User save(User user) {return repository.save(user);}
@@ -30,6 +33,10 @@ public class UserServiceImpl implements ServiceInterface<User> {
     public User findById(int id) {return repository.findById(id);}
 
     public User authenticeUser(String username, String password){return repository.authenticateUser(username, password);}
+
+    public void updateProfilePicture(int userId, String profilePictureURL) {
+        userRepositoryImpl.updateProfilePicture(userId, profilePictureURL);
+    }
 
     //public List<Product> findAllByBrand(Brand brand){return repository.findAllByBrand(brand);}
 }
