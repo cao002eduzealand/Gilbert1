@@ -115,7 +115,7 @@
 <div class="profile-header">
   <img src="/Images/Profile.png" alt="Profilbillede">
   <div class="profile-info">
-    <div class="username">@brugernavn</div>
+    <p th:text="${session.user.displayName}">Default Name</p>
     <div class="badge">PRO</div>
   </div>
 </div>

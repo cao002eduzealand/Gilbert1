@@ -25,11 +25,11 @@ public class User {
 
     public User() {}
 
-    public User(int id, String fName, String lname, String displayName, String userName, String email, String password, String profilePictureURL, Timestamp createdAt,
+    public User(int id, String fName, String lName, String displayName, String userName, String email, String password, String profilePictureURL, Timestamp createdAt,
                 Timestamp lastLogin, String shippingName, String address, String ZIP, String city, String country, Role role, Company company) {
         this.id = id;
         this.fName = fName;
-        this.lName = lname;
+        this.lName = lName;
         this.displayName = displayName;
         this.userName = userName;
         this.email = email;

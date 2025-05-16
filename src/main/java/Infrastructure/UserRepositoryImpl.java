@@ -9,10 +9,8 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.Instant;
 import java.util.List;
 
 @Repository
@@ -43,9 +41,11 @@ public class UserRepositoryImpl implements CrudRepository<User> {
                 " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
         try(Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
 
             String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
+
+            Timestamp now = Timestamp.from(Instant.now());
 
             preparedStatement.setString(1, user.getfName());
             preparedStatement.setString(2, user.getlName());
@@ -54,8 +54,8 @@ public class UserRepositoryImpl implements CrudRepository<User> {
             preparedStatement.setString(5, user.getEmail());
             preparedStatement.setString(6, hashedPassword);
             preparedStatement.setString(7, user.getProfilePictureURL());
-            preparedStatement.setTimestamp(8, user.getCreatedAt());
-            preparedStatement.setTimestamp(9, user.getLastLogin());
+            preparedStatement.setTimestamp(8, now);
+            preparedStatement.setTimestamp(9, now);
             preparedStatement.setString(10, user.getShippingName());
             preparedStatement.setString(11, user.getAddress());
             preparedStatement.setString(12, user.getZIP());
@@ -120,7 +120,7 @@ public class UserRepositoryImpl implements CrudRepository<User> {
 
 
     public boolean usernameExists(String username) {
-        String sql = "SELECT COUNT(*) FROM user WHERE username=?";
+        String sql = "SELECT COUNT(*) FROM user WHERE user_name=?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, username);
         return count != null && count > 0;
     }
@@ -132,7 +132,7 @@ public class UserRepositoryImpl implements CrudRepository<User> {
     }
 
     public User authenticateUser(String username, String password){
-        String sql = "SELECT * FROM user WHERE username=? AND password=?";
+        String sql = "SELECT * FROM user WHERE user_name=?";
     try {
 
         User user =  jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(User.class), username);
