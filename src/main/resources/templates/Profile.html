@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Min Profil</title>
+  <title>Min Profil – Gilbert's Shop</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <style>
     @font-face {
       font-family: 'TheSeaSons';
@@ -17,10 +16,71 @@
       background-color: #f8f0e5;
     }
 
+    /* NAVIGATION */
+    .desktop-nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #004224;
+      height: 90px;
+      padding: 0 20px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+
+    .nav-left, .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      width: 30%;
+    }
+
+    .nav-left {
+      justify-content: flex-start;
+    }
+
+    .nav-right {
+      justify-content: flex-end;
+    }
+
+    .nav-center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 40%;
+    }
+
+    .desktop-nav a {
+      color: #f8f0e5;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    .desktop-nav a:hover {
+      background-color: #423a26;
+      border-radius: 6px;
+      padding: 4px 8px;
+      transition: 0.2s;
+    }
+
+    .search-bar input {
+      height: 30px;
+      padding: 5px;
+      width: 250px;
+      font-size: 16px;
+      border-radius: 35px;
+      font-weight: 500;
+      border: none;
+    }
+
+    /* PROFILE STYLING */
     .profile-header {
       display: flex;
       align-items: center;
-      padding: 20px;
+      padding: 140px 20px 20px;
       background-color: #f8f0e5;
       border-bottom: 2px solid #ccc;
     }
@@ -103,15 +163,67 @@
     }
 
     .profile-content {
-      height: 400px;
       padding: 20px;
       text-align: center;
       color: #423a26;
+      margin-bottom: 80px;
+    }
+
+    /* MOBILE NAVIGATION */
+    .mobile-nav {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .desktop-nav {
+        display: none;
+      }
+
+      .mobile-nav {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        background-color: #004224;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        z-index: 1000;
+      }
+
+      .mobile-nav a img {
+        height: 24px;
+      }
+
+      .profile-header {
+        padding-top: 40px;
+      }
     }
   </style>
 </head>
 <body>
 
+<!-- DESKTOP NAVIGATION -->
+<div class="desktop-nav">
+  <div class="nav-left">
+    <form action="/search" method="get" class="search-bar">
+      <input type="text" name="query" placeholder="Search..."/>
+    </form>
+    <a href="/favourites">Favourites</a>
+  </div>
+
+  <div class="nav-center">
+    <a href="/Gilbert"><img src="/Images/Gilbert.png" alt="Home" style="height: 75px;"></a>
+  </div>
+
+  <div class="nav-right">
+    <a href="/Sell">Sell</a>
+    <a href="/notifications">Notifications</a>
+  </div>
+</div>
+
+<!-- PROFILE HEADER -->
 <div class="profile-header">
   <form method="post" action="/profile/uploadImage" enctype="multipart/form-data">
     <label for="imageUpload">
@@ -129,13 +241,13 @@
     </label>
     <input type="file" id="imageUpload" name="image" accept="image/*" style="display:none" onchange="this.form.submit()" />
   </form>
-
   <div class="profile-info">
     <p class="username" th:text="${user.displayName}">Default Name</p>
     <div class="badge">PRO</div>
   </div>
 </div>
 
+<!-- STATS -->
 <div class="profile-stats">
   <div>
     <span>15</span>
@@ -147,8 +259,10 @@
   </div>
 </div>
 
+<!-- STATUS -->
 <div class="profile-status">Profile type: <strong>Private</strong></div>
 
+<!-- TABS -->
 <div class="tab-menu">
   <a href="#">Listings</a>
   <a href="#">Sales</a>
@@ -157,8 +271,18 @@
   <a href="#">Help</a>
 </div>
 
+<!-- CONTENT -->
 <div class="profile-content">
-  This area can display the user's listings, purchases, and other features of the shop.
+  This area can display the user’s listings, purchases, and other features of the shop.
+</div>
+
+<!-- MOBILE NAVIGATION -->
+<div class="mobile-nav">
+  <a href="/Gilbert"><img src="/Images/Home.svg" alt="Home"/></a>
+  <a href="/search"><img src="/Images/Search.svg" alt="Search"/></a>
+  <a href="/favourites"><img src="/Images/Heart.svg" alt="Favourites"/></a>
+  <a href="/Sell"><img src="/Images/Sell.svg" alt="Sell"/></a>
+  <a href="/notifications"><img src="/Images/Bell.svg" alt="Notifications"/></a>
 </div>
 
 </body>
