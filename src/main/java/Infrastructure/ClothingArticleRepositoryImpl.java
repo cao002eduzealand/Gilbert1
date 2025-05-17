@@ -53,4 +53,9 @@ public class ClothingArticleRepositoryImpl implements CrudRepository<ClothingArt
         return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(ClothingArticle.class), id);
     }
 
+    public List<ClothingArticle> findBySubCategoryId(int id) {
+        String sql = "SELECT * FROM clothing_article WHERE subcategory_id = ?";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ClothingArticle.class), id);
+    }
+
 }

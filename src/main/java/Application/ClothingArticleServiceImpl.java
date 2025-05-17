@@ -41,4 +41,9 @@ public class ClothingArticleServiceImpl implements ServiceInterface<ClothingArti
     public ClothingArticle findById(int id) {
         return repository.findById(id);
     }
+
+    public List<ClothingArticle> findBySubCategoryId(int id) {
+        return repository.findBySubCategoryId(id);
+    }
+
 }

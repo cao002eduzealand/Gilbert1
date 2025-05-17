@@ -101,9 +101,9 @@ public class UserRepositoryImpl implements CrudRepository<User> {
     @Override
     public void update(User user) {
         String sql = "UPDATE user SET fName=?, lName=?, display_name=?, user_name=?, email=?, password=?, profile_picture=?, created_at=?, last_login=?, " +
-                "shipping_full_name=?, shipping_address=?, shipping_zip=?, shipping_city=?, shipping_country=?, role_id=?, company_id=? WHERE user=?";
+                "shipping_full_name=?, shipping_address=?, shipping_zip=?, shipping_city=?, shipping_country=?, role_id=?, company_id=? WHERE id=?";
         jdbcTemplate.update(sql, user.getfName(), user.getlName(), user.getDisplayName(), user.getUserName(), user.getEmail(), user.getPassword(),
-                user.getProfilePictureURL(), user.getCreatedAt(), user.getLastLogin(), user.getAddress(), user.getZIP(), user.getCity(), user.getCountry(), user.getRole().getId(), user.getCompany().getId());
+                user.getProfilePictureURL(), user.getCreatedAt(), user.getLastLogin(), user.getAddress(), user.getZIP(), user.getCity(), user.getCountry(), user.getRole().getId(), user.getCompany().getId(), user.getId());
     }
 
     @Override

@@ -39,4 +39,9 @@ public class SubCategoryServiceImpl implements ServiceInterface<SubCategory> {
     public SubCategory findById(int id) {
         return repository.findById(id);
     }
+
+    public List<SubCategory> findByCategoryId(int id) {
+        return repository.findByCategoryId(id);
+
+    }
 }

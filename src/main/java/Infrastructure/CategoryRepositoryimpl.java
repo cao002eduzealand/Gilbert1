@@ -47,4 +47,5 @@ public class CategoryRepositoryimpl implements CrudRepository<Category> {
         String sql = "select * from category where id=?";
         return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Category.class), id);
     }
+
 }

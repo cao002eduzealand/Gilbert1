@@ -1,5 +1,6 @@
 package Infrastructure;
 
+import Domain.Category;
 import Domain.SubCategory;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -49,5 +50,10 @@ public class SubCategoryRepositoryImpl implements CrudRepository<SubCategory> {
     public SubCategory findById(int id) {
         String sql = "SELECT * FROM subcategory WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(SubCategory.class), id);
+    }
+
+    public List<SubCategory> findByCategoryId(int id) {
+        String sql = "select * from subcategory where category_id=?";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(SubCategory.class), id);
     }
 }

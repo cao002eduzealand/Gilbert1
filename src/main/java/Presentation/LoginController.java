@@ -10,10 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class LoginController {
@@ -26,36 +23,23 @@ public class LoginController {
 
 
     @GetMapping("/login")
-    public String profile(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-
-        if (user == null) {
-            return "Login";
-        }
-
-        model.addAttribute("user", user);
-
-        // Fallback billede hvis brugeren ikke har sat et billede
-        String profileImageURL = user.getProfilePictureURL() != null
-                ? user.getProfilePictureURL()
-                : "/Images/Profile.png";
-
-        model.addAttribute("profileImageURL", profileImageURL);
-
-        return "Profile";
+    public String showLoginForm() {
+       return "Login";
     }
 
     @PostMapping("/login")
-        public String login(@RequestParam String username, @RequestParam String password, Model model, HttpSession session) {
+    public String login(@RequestParam String username, @RequestParam String password, Model model, HttpSession session) {
 
         try {
             User user = userService.authenticeUser(username, password);
             session.setAttribute("user", user);
+            return "redirect:/Gilbert";
+
         } catch (InvalidCredentialsException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "Login";
         }
-        return "redirect:/login";
+
     }
 
 
@@ -75,16 +59,19 @@ public class LoginController {
         try {
             User savedUser = userService.save(user);
             session.setAttribute("user", savedUser);
-        } catch(EmailAlreadyTakenException e){
-            model.addAttribute("errorMessage", e.getMessage());
-            return "Register";
-        } catch(UsernameAlreadyTakenException e){
+            return "redirect:/Gilbert";
+
+        } catch (UsernameAlreadyTakenException | EmailAlreadyTakenException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "Register";
         }
-
-        return "redirect:/Gilbert";
     }
-}
 
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login";
+    }
+
+}
 

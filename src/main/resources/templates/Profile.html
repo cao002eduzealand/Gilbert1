@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Min Profil – Gilbert's Shop</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     @font-face {
       font-family: 'TheSeaSons';
@@ -31,7 +31,8 @@
       z-index: 1000;
     }
 
-    .nav-left, .nav-right {
+    .nav-left,
+    .nav-right {
       display: flex;
       align-items: center;
       gap: 15px;
@@ -85,13 +86,16 @@
       border-bottom: 2px solid #ccc;
     }
 
+    /* PROFILE IMAGE */
     .profile-header img {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
+      width: 120px;
+      height: 120px;
+      border-radius: 50% !important;
       object-fit: cover;
       border: 3px solid #004224;
       margin-right: 20px;
+      cursor: pointer;
+      display: block;
     }
 
     .profile-info {
@@ -203,18 +207,19 @@
   </style>
 </head>
 <body>
-
 <!-- DESKTOP NAVIGATION -->
 <div class="desktop-nav">
   <div class="nav-left">
     <form action="/search" method="get" class="search-bar">
-      <input type="text" name="query" placeholder="Search..."/>
+      <input type="text" name="query" placeholder="Search..." />
     </form>
     <a href="/favourites">Favourites</a>
   </div>
 
   <div class="nav-center">
-    <a href="/Gilbert"><img src="/Images/Gilbert.png" alt="Home" style="height: 75px;"></a>
+    <a href="/Gilbert">
+      <img src="/Images/Gilbert.png" alt="Home" style="height: 75px" />
+    </a>
   </div>
 
   <div class="nav-right">
@@ -226,21 +231,29 @@
 <!-- PROFILE HEADER -->
 <div class="profile-header">
   <form method="post" action="/profile/uploadImage" enctype="multipart/form-data">
+    <!-- Profile Picture -->
     <label for="imageUpload">
-      <!-- Hvis brugeren har et profilbillede -->
+      <!-- If user has a profile picture -->
       <img th:if="${user.profilePictureURL != null}"
            th:src="@{${user.profilePictureURL}}"
-           alt="Profile picture"
-           style="width:120px; height:120px; border-radius:50%; object-fit:cover; cursor:pointer;" />
+           alt="Profile Picture" />
 
-      <!-- Hvis brugeren IKKE har et profilbillede -->
       <img th:if="${user.profilePictureURL == null}"
-           th:src="@{/Images/Profile.png}"
-           alt="Default profile picture"
-           style="width:120px; height:120px; border-radius:50%; object-fit:cover; cursor:pointer;" />
+           th:src="@{/Images/Profile.svg}"
+           alt="Default Profile Picture" />
+
     </label>
-    <input type="file" id="imageUpload" name="image" accept="image/*" style="display:none" onchange="this.form.submit()" />
+
+    <input
+            type="file"
+            id="imageUpload"
+            name="image"
+            accept="image/*"
+            style="display: none"
+            onchange="this.form.submit()"
+    />
   </form>
+
   <div class="profile-info">
     <p class="username" th:text="${user.displayName}">Default Name</p>
     <div class="badge">PRO</div>
@@ -260,7 +273,9 @@
 </div>
 
 <!-- STATUS -->
-<div class="profile-status">Profile type: <strong>Private</strong></div>
+<div class="profile-status">
+  Profile type: <strong>Private</strong>
+</div>
 
 <!-- TABS -->
 <div class="tab-menu">
@@ -273,17 +288,17 @@
 
 <!-- CONTENT -->
 <div class="profile-content">
-  This area can display the user’s listings, purchases, and other features of the shop.
+  This area can display the user’s listings, purchases, and other features of the
+  shop.
 </div>
 
 <!-- MOBILE NAVIGATION -->
 <div class="mobile-nav">
-  <a href="/Gilbert"><img src="/Images/Home.svg" alt="Home"/></a>
-  <a href="/search"><img src="/Images/Search.svg" alt="Search"/></a>
-  <a href="/favourites"><img src="/Images/Heart.svg" alt="Favourites"/></a>
-  <a href="/Sell"><img src="/Images/Sell.svg" alt="Sell"/></a>
-  <a href="/notifications"><img src="/Images/Bell.svg" alt="Notifications"/></a>
+  <a href="/Gilbert"><img src="/Images/Home.svg" alt="Home" /></a>
+  <a href="/search"><img src="/Images/Search.svg" alt="Search" /></a>
+  <a href="/favourites"><img src="/Images/Heart.svg" alt="Favourites" /></a>
+  <a href="/Sell"><img src="/Images/Sell.svg" alt="Sell" /></a>
+  <a href="/notifications"><img src="/Images/Bell.svg" alt="Notifications" /></a>
 </div>
-
 </body>
 </html>
