@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
   <meta charset="UTF-8">
   <title>Gilbert's Shop</title>
@@ -77,8 +78,6 @@
       font-weight: 500;
     }
 
-
-
     /* === CATEGORY BAR === */
     .category-bar {
       background-color: #f8f0e5;
@@ -94,16 +93,123 @@
       z-index: 999;
     }
 
-    .category-bar a {
+    /* Each category is a relative container for dropdown */
+    .category-bar .category-item {
+      position: relative;
+    }
+
+    .category-bar .category-item > a {
       color: #004224;
       font-size: 20px;
       text-decoration: none;
-      padding: 8px 16px;
+      padding: 12px 24px;
       border-radius: 8px;
+      transition: background-color 0.2s ease;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .category-bar .category-item > a:hover {
+      background-color: #423a26;
+      color: #f8f0e5;
+    }
+
+    /* DROPDOWN MENU */
+    .category-bar .dropdown {
+      position: absolute;
+      top: calc(100% - 1px);  /* slightly below category button */
+      left: 0;
+      background-color: #f8f0e5;
+      border: 1px solid #423a26;
+      border-radius: 8px;
+      padding: 20px 24px;
+      min-width: 280px; /* bigger width */
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+
+      /* fade in/out */
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+
+    /* Show dropdown when hovering category or dropdown */
+    .category-bar .category-item:hover > .dropdown,
+    .category-bar .dropdown:hover {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    /* Subcategory inside dropdown */
+    .category-bar .dropdown .subcat-item {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .category-bar .dropdown .subcat-item > a {
+      color: #004224;
+      font-size: 18px;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      display: inline-block;
+      white-space: nowrap;
       transition: background-color 0.2s ease;
     }
 
-    .category-bar a:hover {
+    .category-bar .dropdown .subcat-item > a:hover {
+      background-color: #423a26;
+      color: #f8f0e5;
+    }
+
+    /* NESTED DROPDOWN for Clothing Articles */
+    .category-bar .nested-dropdown {
+      position: absolute;
+      top: 0;
+      left: 100%;
+      background-color: #f8f0e5;
+      border: 1px solid #423a26;
+      border-radius: 8px;
+      padding: 15px 20px;
+      min-width: 260px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 1100;
+    }
+
+    /* Show nested dropdown on hover over subcat-item or nested-dropdown */
+    .category-bar .dropdown .subcat-item:hover > .nested-dropdown,
+    .category-bar .nested-dropdown:hover {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    /* Clothing article links inside nested dropdown */
+    .category-bar .nested-dropdown a {
+      color: #004224;
+      font-size: 16px;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      display: block;
+      white-space: nowrap;
+      transition: background-color 0.2s ease;
+    }
+
+    .category-bar .nested-dropdown a:hover {
       background-color: #423a26;
       color: #f8f0e5;
     }
@@ -163,15 +269,17 @@
         padding-bottom: 80px;
       }
     }
+
   </style>
 </head>
+
 <body>
 
 <!-- DESKTOP NAVIGATION -->
 <div class="desktop-nav">
   <div class="nav-left">
     <form action="/search" method="get" class="search-bar">
-      <input type="text" name="query" placeholder="Search..."/>
+      <input type="text" name="query" placeholder="Search..." />
     </form>
     <a href="/favourites">Favourites</a>
   </div>
@@ -186,14 +294,29 @@
   </div>
 </div>
 
-<!-- CATEGORY BAR -->
 <div class="category-bar">
-  <a href="#">Women</a>
-  <a href="#">Men</a>
-  <a href="#">Designers</a>
-  <a href="#">Home</a>
-  <a href="#">Beauty</a>
+  <div th:each="entry : ${categoryTree}" class="category-item">
+    <!-- Category Link -->
+    <a href="#" th:text="${entry.key.name}"></a>
+
+    <!-- Subcategory dropdown -->
+    <div class="dropdown">
+      <div th:each="sub : ${entry.value.keySet()}" class="subcat-item">
+        <!-- Subcategory Link -->
+        <a href="#" th:text="${sub.name}"></a>
+
+        <!-- Nested dropdown for clothing articles -->
+        <div class="nested-dropdown">
+          <a th:each="article : ${entry.value.get(sub)}"
+             href="#"
+             th:text="${article.name}"></a>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+
 
 <!-- MAIN CONTENT -->
 <div class="content">
@@ -203,11 +326,11 @@
 
 <!-- MOBILE NAVIGATION -->
 <div class="mobile-nav">
-  <a href="/Gilbert"><img src="/Images/Home.svg" alt="Home"/></a>
-  <a href="/search"><img src="/Images/Search.svg" alt="Search"/></a>
-  <a href="/favourites"><img src="/Images/Heart.svg" alt="Favourites"/></a>
-  <a href="/login"><img src="/Images/Profile.svg" alt="Me/Sell"/></a>
-  <a href="/notifications"><img src="/Images/Bell.svg" alt="Notifications"/></a>
+  <a href="/Gilbert"><img src="/Images/Home.svg" alt="Home" /></a>
+  <a href="/search"><img src="/Images/Search.svg" alt="Search" /></a>
+  <a href="/favourites"><img src="/Images/Heart.svg" alt="Favourites" /></a>
+  <a href="/login"><img src="/Images/Profile.svg" alt="Me/Sell" /></a>
+  <a href="/notifications"><img src="/Images/Bell.svg" alt="Notifications" /></a>
 </div>
 
 </body>
