@@ -46,13 +46,14 @@ public String showProfile(HttpSession session, Model model) {
     public String uploadProfileImage(@RequestParam("image") MultipartFile image, HttpSession session) throws IOException {
         User user = (User) session.getAttribute("user");
         if (user == null || image.isEmpty()) {
-            return "redirect:/profile"; // or some error page
+            return "redirect:/profile";
         }
 
-        String newImageUrl = userService.saveProfileImage(user, image);
-        user.setProfilePictureURL(newImageUrl);
+        String imageUrl = userService.saveProfileImage(user, image);
+        user.setProfilePictureURL(imageUrl);
+        System.out.println(imageUrl);
         session.setAttribute("user", user);
-        return "redirect:/profile";
 
+        return "redirect:/profile";
     }
 }

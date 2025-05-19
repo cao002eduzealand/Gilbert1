@@ -18,7 +18,8 @@ import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements ServiceInterface<User> {
-    private final Path uploadPath = Paths.get("C:/profile-images/");
+    private final Path uploadPath = Paths.get("src/main/resources/static/uploads");
+
 
     private final UserRepositoryImpl repository;
 
@@ -67,7 +68,7 @@ public class UserServiceImpl implements ServiceInterface<User> {
         Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
         // Generate relative URL
-        String imageUrl = "/images/" + newFilename;
+        String imageUrl = "/uploads/" + newFilename;
 
         // Update user
         user.setProfilePictureURL(imageUrl);
