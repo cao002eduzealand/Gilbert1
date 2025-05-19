@@ -26,7 +26,12 @@ public class BrandRepositoryImpl implements CrudRepository<Brand> {
     @Override
     public List<Brand> findAll() {
         String sql = "SELECT * FROM brand";
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Brand.class));
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Brand brand = new Brand();
+            brand.setId(rs.getInt("id"));
+            brand.setBrandName(rs.getString("name")); // Map 'name' column to brandName
+            return brand;
+        });
     }
 
     @Override

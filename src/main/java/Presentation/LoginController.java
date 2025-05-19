@@ -17,10 +17,8 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController {
 
     private final UserServiceImpl userService;
-    private final BrandServiceImpl brandService;
-    public LoginController(UserServiceImpl userService, BrandServiceImpl brandService) {
+    public LoginController(UserServiceImpl userService) {
         this.userService = userService;
-        this.brandService=brandService;
     }
 
 
@@ -35,7 +33,6 @@ public class LoginController {
         try {
             User user = userService.authenticeUser(username, password);
             session.setAttribute("user", user);
-            brandService.saveBrands();
             return "redirect:/Gilbert";
 
         } catch (InvalidCredentialsException e) {

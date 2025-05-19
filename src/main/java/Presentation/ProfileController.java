@@ -1,6 +1,9 @@
 package Presentation;
 
+import Application.ProductServiceImpl;
 import Application.UserServiceImpl;
+import Domain.Product;
+import Domain.ProductImage;
 import Domain.User;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -16,31 +19,73 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Controller
 public class ProfileController {
 
-
-
     private final UserServiceImpl userService;
+    private final ProductServiceImpl productService;
 
-    public ProfileController(UserServiceImpl userService) {
+    public ProfileController(UserServiceImpl userService, ProductServiceImpl productService) {
         this.userService = userService;
+        this.productService = productService;
     }
 
+    @GetMapping("/profile")
+    public String showProfile(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
 
+        // Check for any success messages
+        String successMessage = (String) session.getAttribute("successMessage");
+        if (successMessage != null) {
+            model.addAttribute("successMessage", successMessage);
+            session.removeAttribute("successMessage");
+        }
 
-@GetMapping("/profile")
-public String showProfile(HttpSession session, Model model) {
-     User user = (User) session.getAttribute("user");
-     if (user == null) {
-         return "redirect:/login";
-     }
-     model.addAttribute("user", user);
+        // Check if we need to force refresh products
+        boolean refreshProducts = session.getAttribute("refreshProducts") != null;
+        if (refreshProducts) {
+            session.removeAttribute("refreshProducts");
+        }
+
+        try {
+            // Fetch user's listings
+            List<Product> userProducts = productService.getProductsByUser(user);
+
+            // Debug - log product details including images
+            System.out.println("User " + user.getUserName() + " has " + userProducts.size() + " products");
+            for (Product product : userProducts) {
+                System.out.println("Product ID: " + product.getId());
+                System.out.println("  Model: " + product.getModelName());
+
+                // Check images
+                if (product.getImages() != null) {
+                    System.out.println("  Number of images: " + product.getImages().size());
+                    for (ProductImage image : product.getImages()) {
+                        System.out.println("    Image URL: " + image.getImageUrl());
+                    }
+                } else {
+                    System.out.println("  Images: NULL");
+                }
+            }
+
+            model.addAttribute("products", userProducts);
+        } catch (Exception e) {
+            System.out.println("Error loading products: " + e.getMessage());
+            e.printStackTrace();
+            model.addAttribute("errorMessage", "Error loading your products: " + e.getMessage());
+            model.addAttribute("products", new ArrayList<Product>());
+        }
+
+        model.addAttribute("user", user);
         return "profile";
-}
-
+    }
 
     @PostMapping("/profile/uploadImage")
     public String uploadProfileImage(@RequestParam("image") MultipartFile image, HttpSession session) throws IOException {
@@ -51,15 +96,13 @@ public String showProfile(HttpSession session, Model model) {
 
         String imageUrl = userService.saveProfileImage(user, image);
         user.setProfilePictureURL(imageUrl);
-        System.out.println(imageUrl);
         session.setAttribute("user", user);
 
         return "redirect:/profile";
     }
 
-    @PostMapping ("/logout")
+    @PostMapping("/logout")
     public String logout(HttpSession session) {
-        //lastlogout
         session.invalidate();
         return "redirect:/login";
     }

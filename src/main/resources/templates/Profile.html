@@ -204,6 +204,130 @@
         padding-top: 40px;
       }
     }
+    /* Listings Container */
+    .listings-container {
+      padding: 20px 0;
+    }
+
+    .listings-container h3 {
+      color: #004224;
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+
+    /* No Listings Message */
+    .no-listings {
+      text-align: center;
+      padding: 30px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .no-listings a {
+      color: #004224;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .no-listings a:hover {
+      text-decoration: underline;
+    }
+
+    /* Product Grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    /* Product Card */
+    .product-card {
+      background-color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    /* Product Image */
+    .product-image {
+      height: 200px;
+      overflow: hidden;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Product Details */
+    .product-details {
+      padding: 12px;
+    }
+
+    .product-details h4 {
+      margin: 0 0 8px;
+      color: #004224;
+      font-size: 16px;
+    }
+
+    .product-type, .product-condition {
+      margin: 4px 0;
+      color: #423a26;
+      font-size: 14px;
+    }
+
+    .product-price {
+      font-weight: bold;
+      color: #004224;
+      font-size: 18px;
+      margin: 8px 0;
+    }
+
+    /* Product Actions */
+    .product-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+    }
+
+    .view-btn, .edit-btn {
+      padding: 6px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .view-btn {
+      background-color: #004224;
+      color: #f8f0e5;
+    }
+
+    .edit-btn {
+      background-color: #423a26;
+      color: #f8f0e5;
+    }
+
+    /* Make grid responsive */
+    @media (max-width: 768px) {
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .product-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -288,8 +412,52 @@
 
 <!-- CONTENT -->
 <div class="profile-content">
-  This area can display the user’s listings, purchases, and other features of the
-  shop.
+  <!-- Add this near the top of your profile content div -->
+  <div th:if="${successMessage}" class="success-message" style="background-color: #e0f0e9; color: #004224; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+    <p th:text="${successMessage}">Success message</p>
+  </div>
+
+  <!-- And for error messages -->
+  <div th:if="${errorMessage}" class="error-message" style="background-color: #f0e0e0; color: #420000; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+    <p th:text="${errorMessage}">Error message</p>
+  </div>
+
+  <div class="profile-content">
+    <div class="listings-container">
+      <h3>My Listings</h3>
+
+
+      <!-- Product grid -->
+      <div th:if="${not #lists.isEmpty(products)}" class="product-grid">
+        <div th:each="product : ${products}" class="product-card">
+          <!-- Product Image -->
+          <div class="product-image">
+            <!-- Product image (when available) -->
+            <img th:if="${product.images != null and not #lists.isEmpty(product.images) and product.images[0] != null and product.images[0].imageUrl != null}"
+                 th:src="${product.images[0].imageUrl}"
+                 alt="Product Image">
+
+            <!-- Placeholder image (when no product image) -->
+            <img th:unless="${product.images != null and not #lists.isEmpty(product.images) and product.images[0] != null and product.images[0].imageUrl != null}"
+                 src="/Images/placeholder-product.png"
+                 alt="No Image">
+          </div>
+
+          <!-- Product Details -->
+          <div class="product-details">
+            <h4 th:text="${product.brand != null ? product.brand.brandName : 'Unknown'} + ' ' + ${product.modelName}">Brand Model</h4>
+            <p class="product-type" th:text="${product.clothingArticle != null ? product.clothingArticle.name : 'Unknown'}">Product Type</p>
+            <p class="product-price" th:text="${'DKK ' + product.price}">Price</p>
+            <p class="product-condition" th:text="${product.condition != null ? product.condition.condition : 'Unknown'}">Condition</p>
+            <div class="product-actions">
+              <a th:href="@{'/product/' + ${product.id}}" class="view-btn">View</a>
+              <a th:href="@{'/product/edit/' + ${product.id}}" class="edit-btn">Edit</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- MOBILE NAVIGATION -->

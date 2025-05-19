@@ -1,6 +1,7 @@
 package Application;
 
 import Domain.Brand;
+import Domain.ProductCondition;
 import Domain.User;
 import Infrastructure.ProductRepositoryImpl;
 import org.springframework.stereotype.Service;
@@ -35,4 +36,7 @@ public class ProductServiceImpl implements ServiceInterface<Product> {
 
     public List<Product> getProductsByUser(User user){return repository.getProductsByUser(user);}
 
+    public List<ProductCondition> findAllProductConditions(){
+      return  repository.findAllProductConditions();
+    }
 }

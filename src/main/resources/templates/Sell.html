@@ -137,18 +137,41 @@
 <!-- SELL FORM -->
 <div class="sell-container">
     <h2>Opret en ny listing</h2>
-    <form method="post" action="/Sell" enctype="multipart/form-data">
-        <input type="text" name="brand" placeholder="Brand" required />
-        <input type="text" name="modelName" placeholder="Modelnavn" required />
-        <input type="text" name="type" placeholder="Type (f.eks. jakke, sko...)" required />
-        <input type="text" name="condition" placeholder="Tilstand (f.eks. ny, brugt...)" required />
-        <select name="status" required>
-            <option value="" disabled selected>Status</option>
-            <option value="Til salg">Til salg</option>
-            <option value="Solgt">Solgt</option>
+    <form method="post" action="/ProductReview" enctype="multipart/form-data">
+        <!-- Brand Dropdown - using name instead of binding directly -->
+        <select name="brandId" required>
+            <option value="" disabled selected>Vælg brand</option>
+            <option th:each="brand : ${brands}" th:value="${brand.id}" th:text="${brand.brandName}"></option>
         </select>
+
+        <!-- Model Name -->
+        <input type="text" name="modelName" placeholder="Modelnavn" required />
+
+        <!-- Clothing Article Type Dropdown -->
+        <select name="clothingArticleId" required>
+            <option value="" disabled selected>Vælg type</option>
+            <option th:each="article : ${clothingArticles}" th:value="${article.id}" th:text="${article.name}"></option>
+        </select>
+
+        <!-- Condition Dropdown -->
+        <select name="conditionId" required>
+            <option value="" disabled selected>Vælg tilstand</option>
+            <option th:each="condition : ${conditions}" th:value="${condition.id}" th:text="${condition.condition}"></option>
+        </select>
+
+        <!-- Status Dropdown -->
+        <select name="statusId" required>
+            <option value="" disabled selected>Status</option>
+            <option th:each="status : ${statuses}" th:value="${status.id}" th:text="${status.status}"></option>
+        </select>
+
+        <!-- Price -->
         <input type="number" name="price" placeholder="Pris (DKK)" min="0" required />
+
+        <!-- Description -->
         <textarea name="description" rows="4" placeholder="Beskrivelse..."></textarea>
+
+        <!-- Image Upload -->
         <input type="file" name="productImage" accept="image/*" />
 
         <button type="submit">Opret Listing</button>

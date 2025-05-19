@@ -20,7 +20,5 @@ public class ProductCondition {
    public String getCondition() {
        return condition;
    }
-   public void setCondition(String condition) {
-       this.condition = condition;
-   }
+   public void setCondition(String condition) {this.condition = condition;}
 }

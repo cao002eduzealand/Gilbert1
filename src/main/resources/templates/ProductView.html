@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title th:text="${product.brand.brandName + ' ' + product.modelName}">Product Details – Gilbert's Shop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    @font-face {
+      font-family: 'TheSeaSons';
+      src: url('/Fonts/TheSeaSons.ttf');
+    }
+
+    body {
+      margin: 0;
+      font-family: 'TheSeaSons', sans-serif;
+      background-color: #f8f0e5;
+    }
+
+    .desktop-nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #004224;
+      height: 90px;
+      padding: 0 20px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+
+    .nav-left,
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      width: 30%;
+    }
+
+    .nav-left {
+      justify-content: flex-start;
+    }
+
+    .nav-right {
+      justify-content: flex-end;
+    }
+
+    .nav-center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 40%;
+    }
+
+    .desktop-nav a {
+      color: #f8f0e5;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    .desktop-nav a:hover {
+      background-color: #423a26;
+      border-radius: 6px;
+      padding: 4px 8px;
+      transition: 0.2s;
+    }
+
+    .product-container {
+      max-width: 800px;
+      margin: 120px auto 40px;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .product-header {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 30px;
+    }
+
+    .product-image {
+      width: 350px;
+      height: 350px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-right: 30px;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .product-info {
+      flex: 1;
+    }
+
+    .product-info h1 {
+      font-size: 24px;
+      color: #004224;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .product-price {
+      font-size: 26px;
+      font-weight: bold;
+      color: #004224;
+      margin: 15px 0;
+    }
+
+    .product-meta {
+      margin-bottom: 15px;
+    }
+
+    .product-meta p {
+      margin: 5px 0;
+      color: #423a26;
+    }
+
+    .product-description {
+      margin-top: 20px;
+      color: #423a26;
+      line-height: 1.6;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .status-listed {
+      background-color: #e0f0e9;
+      color: #004224;
+    }
+
+    .status-sold {
+      background-color: #f0e0e0;
+      color: #a02c2c;
+    }
+
+    .action-buttons {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-buttons a {
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .edit-button {
+      background-color: #004224;
+      color: #f8f0e5;
+    }
+
+    .back-button {
+      background-color: #423a26;
+      color: #f8f0e5;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<div class="desktop-nav">
+  <div class="nav-left">
+    <a href="/home">Home</a>
+    <a href="/favourites">Favourites</a>
+  </div>
+
+  <div class="nav-center">
+    <a href="/Gilbert">
+      <img src="/Images/Gilbert.png" alt="Home" style="height: 75px" />
+    </a>
+  </div>
+
+  <div class="nav-right">
+    <a href="/profile">Profile</a>
+    <a href="/logout">Logout</a>
+  </div>
+</div>
+
+<!-- PRODUCT DETAILS -->
+<div class="product-container">
+  <div class="product-header">
+    <div class="product-image">
+      <!-- Product image -->
+      <img th:if="${product.images != null and not #lists.isEmpty(product.images) and product.images[0] != null and product.images[0].imageUrl != null}"
+           th:src="${product.images[0].imageUrl}"
+           th:alt="${product.modelName}"
+           onerror="this.src='/Images/placeholder-product.png'; this.onerror=null;">
+
+      <!-- Default image if no images uploaded -->
+      <img th:unless="${product.images != null and not #lists.isEmpty(product.images) and product.images[0] != null and product.images[0].imageUrl != null}"
+           src="/Images/placeholder-product.png"
+           alt="No Image">
+    </div>
+
+    <div class="product-info">
+      <h1 th:text="${product.brand.brandName + ' ' + product.modelName}">Brand Model</h1>
+
+      <!-- Status Badge -->
+      <div class="status-badge"
+           th:classappend="${product.productStatus != null and product.productStatus.status.toLowerCase().contains('sold')} ? 'status-sold' : 'status-listed'"
+           th:text="${product.productStatus != null ? product.productStatus.status : 'Listed'}">Status</div>
+
+      <div class="product-meta">
+        <p th:text="${'Type: ' + (product.clothingArticle != null ? product.clothingArticle.name : 'Unknown')}">Type: Shoes</p>
+        <p th:text="${'Condition: ' + (product.condition != null ? product.condition.condition : 'Unknown')}">Condition: New</p>
+        <p th:text="${'Seller: ' + (product.seller != null && product.seller.displayName != null ? product.seller.displayName : 'Unknown')}">Seller: Username</p>
+        <p th:text="${'Listed: ' + (product.dateUploaded != null ? #dates.format(product.dateUploaded, 'dd MMM yyyy') : 'Unknown')}">Listed: 01 May 2025</p>
+      </div>
+
+      <div class="product-price" th:text="${'DKK ' + product.price}">DKK 500.0</div>
+
+      <div class="action-buttons" th:if="${isOwner}">
+        <a th:href="@{'/product/edit/' + ${product.id}}" class="edit-button">Edit Listing</a>
+        <a href="/profile" class="back-button">Back to Profile</a>
+      </div>
+      <div class="action-buttons" th:unless="${isOwner}">
+        <a href="/Gilbert" class="back-button">Back to Home</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="product-description">
+    <h3>Description</h3>
+    <p th:text="${product.description}">Product description goes here...</p>
+  </div>
+</div>
+
+</body>
+</html>
