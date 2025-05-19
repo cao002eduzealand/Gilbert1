@@ -1,6 +1,7 @@
 package Presentation;
 
 
+import Application.BrandServiceImpl;
 import Application.UserServiceImpl;
 import Domain.EmailAlreadyTakenException;
 import Domain.InvalidCredentialsException;
@@ -16,9 +17,10 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController {
 
     private final UserServiceImpl userService;
-
-    public LoginController(UserServiceImpl userService) {
+    private final BrandServiceImpl brandService;
+    public LoginController(UserServiceImpl userService, BrandServiceImpl brandService) {
         this.userService = userService;
+        this.brandService=brandService;
     }
 
 
@@ -33,6 +35,7 @@ public class LoginController {
         try {
             User user = userService.authenticeUser(username, password);
             session.setAttribute("user", user);
+            brandService.saveBrands();
             return "redirect:/Gilbert";
 
         } catch (InvalidCredentialsException e) {
@@ -67,11 +70,7 @@ public class LoginController {
         }
     }
 
-    @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
-        return "redirect:/login";
-    }
+
 
 }
 

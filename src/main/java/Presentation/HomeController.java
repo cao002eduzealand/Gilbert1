@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,13 @@ public class HomeController {
     @GetMapping("/home")
     public String showHomePage(Model model) {
         List<Category> categories = categoryService.findAll();
+
+
+        List<String> desiredOrder = List.of("Designer's", "Men's", "Women's", "Home", "Beauty");
+
+        categories.sort(Comparator.comparingInt(cat ->
+                desiredOrder.indexOf(cat.getName()))
+        );
         Map<Category, Map<SubCategory, List<ClothingArticle>>> categoryTree = new LinkedHashMap<>();
 
         for (Category category : categories) {

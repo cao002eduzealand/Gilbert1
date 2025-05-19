@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Sell – Gilbert's Shop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        @font-face {
+            font-family: 'TheSeaSons';
+            src: url('/Fonts/TheSeaSons.ttf');
+        }
+
+        body {
+            margin: 0;
+            font-family: 'TheSeaSons', sans-serif;
+            background-color: #f8f0e5;
+        }
+
+        .desktop-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #004224;
+            height: 90px;
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .nav-left,
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 30%;
+        }
+
+        .nav-left {
+            justify-content: flex-start;
+        }
+
+        .nav-right {
+            justify-content: flex-end;
+        }
+
+        .nav-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40%;
+        }
+
+        .desktop-nav a {
+            color: #f8f0e5;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .desktop-nav a:hover {
+            background-color: #423a26;
+            border-radius: 6px;
+            padding: 4px 8px;
+            transition: 0.2s;
+        }
+
+        .sell-container {
+            max-width: 600px;
+            margin: 120px auto 40px;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .sell-container h2 {
+            text-align: center;
+            color: #004224;
+            margin-bottom: 20px;
+        }
+
+        .sell-container form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .sell-container input,
+        .sell-container textarea,
+        .sell-container select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-family: 'TheSeaSons', sans-serif;
+            font-size: 16px;
+        }
+
+        .sell-container button {
+            background-color: #004224;
+            color: #f8f0e5;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .sell-container button:hover {
+            background-color: #423a26;
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<div class="desktop-nav">
+    <div class="nav-left">
+        <a href="/home">Home</a>
+        <a href="/favourites">Favourites</a>
+    </div>
+
+    <div class="nav-center">
+        <a href="/Gilbert">
+            <img src="/Images/Gilbert.png" alt="Home" style="height: 75px" />
+        </a>
+    </div>
+
+    <div class="nav-right">
+        <a href="/profile">Profile</a>
+        <a href="/logout">Logout</a>
+    </div>
+</div>
+
+<!-- SELL FORM -->
+<div class="sell-container">
+    <h2>Opret en ny listing</h2>
+    <form method="post" action="/Sell" enctype="multipart/form-data">
+        <input type="text" name="brand" placeholder="Brand" required />
+        <input type="text" name="modelName" placeholder="Modelnavn" required />
+        <input type="text" name="type" placeholder="Type (f.eks. jakke, sko...)" required />
+        <input type="text" name="condition" placeholder="Tilstand (f.eks. ny, brugt...)" required />
+        <select name="status" required>
+            <option value="" disabled selected>Status</option>
+            <option value="Til salg">Til salg</option>
+            <option value="Solgt">Solgt</option>
+        </select>
+        <input type="number" name="price" placeholder="Pris (DKK)" min="0" required />
+        <textarea name="description" rows="4" placeholder="Beskrivelse..."></textarea>
+        <input type="file" name="productImage" accept="image/*" />
+
+        <button type="submit">Opret Listing</button>
+    </form>
+</div>
+
+</body>
+</html>

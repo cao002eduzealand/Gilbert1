@@ -56,4 +56,11 @@ public String showProfile(HttpSession session, Model model) {
 
         return "redirect:/profile";
     }
+
+    @PostMapping ("/logout")
+    public String logout(HttpSession session) {
+        //lastlogout
+        session.invalidate();
+        return "redirect:/login";
+    }
 }
