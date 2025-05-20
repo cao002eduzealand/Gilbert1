@@ -1,6 +1,8 @@
 package Infrastructure;
 
+import Domain.Category;
 import Domain.ClothingArticle;
+import Domain.SubCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -29,8 +31,30 @@ public class ClothingArticleRepositoryImpl implements CrudRepository<ClothingArt
 
     @Override
     public List<ClothingArticle> findAll() {
-       String sql = "SELECT * FROM clothing_article";
-       return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ClothingArticle.class));
+        String sql = "SELECT ca.*, sc.name as subcategory_name, sc.category_id " +
+                "FROM clothing_article ca " +
+                "JOIN subcategory sc ON ca.subcategory_id = sc.id";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            ClothingArticle article = new ClothingArticle();
+            article.setId(rs.getInt("id"));
+            article.setName(rs.getString("name"));
+
+            // Create subcategory object
+            SubCategory subcategory = new SubCategory();
+            subcategory.setId(rs.getInt("subcategory_id"));
+            subcategory.setName(rs.getString("subcategory_name"));
+
+            // Set category_id from join
+            Category category = new Category();
+            category.setId(rs.getInt("category_id"));
+            subcategory.setCategory(category);
+
+            // Set subcategory to article
+            article.setSubcategory(subcategory);
+
+            return article;
+        });
     }
 
     @Override
@@ -49,13 +73,59 @@ public class ClothingArticleRepositoryImpl implements CrudRepository<ClothingArt
 
     @Override
     public ClothingArticle findById(int id) {
-        String sql = "SELECT * FROM clothing_article WHERE id=?";
-        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(ClothingArticle.class), id);
+        String sql = "SELECT ca.*, sc.name as subcategory_name, sc.category_id " +
+                "FROM clothing_article ca " +
+                "JOIN subcategory sc ON ca.subcategory_id = sc.id " +
+                "WHERE ca.id = ?";
+
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+            ClothingArticle article = new ClothingArticle();
+            article.setId(rs.getInt("id"));
+            article.setName(rs.getString("name"));
+
+            // Create subcategory object
+            SubCategory subcategory = new SubCategory();
+            subcategory.setId(rs.getInt("subcategory_id"));
+            subcategory.setName(rs.getString("subcategory_name"));
+
+            // Set category_id from join
+            Category category = new Category();
+            category.setId(rs.getInt("category_id"));
+            subcategory.setCategory(category);
+
+            // Set subcategory to article
+            article.setSubcategory(subcategory);
+
+            return article;
+        }, id);
     }
 
     public List<ClothingArticle> findBySubCategoryId(int id) {
-        String sql = "SELECT * FROM clothing_article WHERE subcategory_id = ?";
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ClothingArticle.class), id);
+        String sql = "SELECT ca.*, sc.name as subcategory_name, sc.category_id " +
+                "FROM clothing_article ca " +
+                "JOIN subcategory sc ON ca.subcategory_id = sc.id " +
+                "WHERE ca.subcategory_id = ?";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            ClothingArticle article = new ClothingArticle();
+            article.setId(rs.getInt("id"));
+            article.setName(rs.getString("name"));
+
+            // Create subcategory object
+            SubCategory subcategory = new SubCategory();
+            subcategory.setId(rs.getInt("subcategory_id"));
+            subcategory.setName(rs.getString("subcategory_name"));
+
+            // Set category_id from join
+            Category category = new Category();
+            category.setId(rs.getInt("category_id"));
+            subcategory.setCategory(category);
+
+            // Set subcategory to article
+            article.setSubcategory(subcategory);
+
+            return article;
+        }, id);
     }
 
 }
