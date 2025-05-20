@@ -383,8 +383,18 @@
 
   <div class="profile-info">
     <p class="username" th:text="${user.displayName}">Default Name</p>
+
     <div class="badge">PRO</div>
   </div>
+
+
+  <div class="business-info" th:if="${user.company != null}">
+    <p class ="business-button" th:text="${user.company.companyName}">Company</p>
+
+  </div>
+
+
+
 </div>
 
 <!-- STATS -->
