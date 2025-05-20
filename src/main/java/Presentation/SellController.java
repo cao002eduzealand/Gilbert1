@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Files;
@@ -24,6 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 @Controller
 public class SellController {
@@ -34,31 +32,45 @@ public class SellController {
     private final ProductConditionServiceImpl conditionService;
     private final ProductStatusServiceImpl statusService;
     private final ProductImageServiceImpl productImageService;
+    private final CategoryServiceImpl categoryService;
+    private final SubCategoryServiceImpl subCategoryService;
 
     @Autowired
     public SellController(ProductServiceImpl productService,
                           BrandServiceImpl brandService,
                           ClothingArticleServiceImpl clothingArticleService,
                           ProductConditionServiceImpl conditionService,
-                          ProductStatusServiceImpl statusService, ProductImageServiceImpl productImageService) {
+                          ProductStatusServiceImpl statusService,
+                          ProductImageServiceImpl productImageService,
+                          CategoryServiceImpl categoryService,
+                          SubCategoryServiceImpl subCategoryService) {
         this.productService = productService;
         this.brandService = brandService;
         this.clothingArticleService = clothingArticleService;
         this.conditionService = conditionService;
         this.statusService = statusService;
         this.productImageService = productImageService;
+        this.categoryService = categoryService;
+        this.subCategoryService = subCategoryService;
     }
 
     @GetMapping("/Sell")
-    public String showSellForm(HttpSession session, Model model){
+    public String showSellForm(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null){
+        if (user == null) {
             return "redirect:/login";
         }
 
         // Load data for dropdowns
         model.addAttribute("brands", brandService.findAll());
-        model.addAttribute("clothingArticles", clothingArticleService.findAll());
+
+        // Get all categories and filter out "Designer's" category
+        List<Category> allCategories = categoryService.findAll();
+        List<Category> filteredCategories = allCategories.stream()
+                .filter(category -> !category.getName().equalsIgnoreCase("Designer's"))
+                .collect(Collectors.toList());
+
+        model.addAttribute("categories", filteredCategories);
         model.addAttribute("conditions", conditionService.findAll());
         model.addAttribute("statuses", statusService.findAll());
 
@@ -66,9 +78,23 @@ public class SellController {
         return "Sell";
     }
 
+    // Add REST endpoints to get subcategories and clothing articles
+    @GetMapping("/api/subcategories/{categoryId}")
+    @ResponseBody
+    public List<SubCategory> getSubcategories(@PathVariable int categoryId) {
+        return subCategoryService.findByCategoryId(categoryId);
+    }
+
+    @GetMapping("/api/clothingArticles/{subcategoryId}")
+    @ResponseBody
+    public List<ClothingArticle> getClothingArticles(@PathVariable int subcategoryId) {
+        return clothingArticleService.findBySubCategoryId(subcategoryId);
+    }
     @PostMapping("/ProductReview")
     public String showProductReview(HttpSession session, Model model,
                                     @RequestParam("brandId") int brandId,
+                                    @RequestParam("categoryId") int categoryId,
+                                    @RequestParam("subcategoryId") int subcategoryId,
                                     @RequestParam("clothingArticleId") int clothingArticleId,
                                     @RequestParam("conditionId") int conditionId,
                                     @RequestParam("statusId") int statusId,
@@ -83,10 +109,24 @@ public class SellController {
         }
 
         try {
+            // Verify that clothing article belongs to selected subcategory
+            ClothingArticle clothingArticle = clothingArticleService.findById(clothingArticleId);
+            if (clothingArticle.getSubcategory().getId() != subcategoryId) {
+                model.addAttribute("error", "Invalid clothing article selection");
+
+                // Load data for dropdowns
+                model.addAttribute("brands", brandService.findAll());
+                model.addAttribute("categories", categoryService.findAll());
+                model.addAttribute("conditions", conditionService.findAll());
+                model.addAttribute("statuses", statusService.findAll());
+
+                return "Sell";
+            }
+
             // Create a new product
             Product product = new Product();
             product.setBrand(brandService.findById(brandId));
-            product.setClothingArticle(clothingArticleService.findById(clothingArticleId));
+            product.setClothingArticle(clothingArticle);
             product.setCondition(conditionService.findById(conditionId));
             product.setProductStatus(statusService.findById(statusId));
             product.setModelName(modelName);

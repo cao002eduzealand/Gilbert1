@@ -152,10 +152,10 @@ public class UserRepositoryImpl implements CrudRepository<User> {
                 u.setCity(rs.getString("shipping_city"));
                 u.setCountry(rs.getString("shipping_country"));
 
-                // Set role (if available)
+
                 int roleId = rs.getInt("role_id");
                 if (roleId > 0) {
-                    Role role = new Role(roleId, ""); // We'll fetch the actual role name separately if needed
+                    Role role = new Role(roleId, "");
                     u.setRole(role);
                 }
 
@@ -163,7 +163,6 @@ public class UserRepositoryImpl implements CrudRepository<User> {
             }, username);
 
             if (BCrypt.checkpw(password, user.getPassword())) {
-                // Update last login time
                 String updateSql = "UPDATE user SET last_login = ? WHERE id = ?";
                 Timestamp now = new Timestamp(System.currentTimeMillis());
                 jdbcTemplate.update(updateSql, now, user.getId());
@@ -181,6 +180,11 @@ public class UserRepositoryImpl implements CrudRepository<User> {
     public void updateProfilePicture(int userId, String profilePictureURL) {
         String sql = "UPDATE user SET profile_picture = ? WHERE id = ?";
         jdbcTemplate.update(sql, profilePictureURL, userId);
+    }
+
+    public void updateUserCompany(int userId, int companyId){
+        String sql = "UPDATE user set company_id=? where id =?";
+        jdbcTemplate.update(sql, companyId, userId);
     }
 
 

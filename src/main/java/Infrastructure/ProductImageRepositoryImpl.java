@@ -35,7 +35,6 @@ public class ProductImageRepositoryImpl implements CrudRepository<ProductImage> 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             ProductImage productImage = new ProductImage();
             productImage.setId(rs.getInt("id"));
-            // You'll need to fetch the associated product separately or use a join
             productImage.setImageUrl(rs.getString("image_url"));
             productImage.setUploadedAt(rs.getTimestamp("uploaded_at"));
             return productImage;
@@ -52,11 +51,9 @@ public class ProductImageRepositoryImpl implements CrudRepository<ProductImage> 
 
     @Override
     public void delete(int id) {
-        // First delete related images
         String deleteImagesSql = "DELETE FROM product_image WHERE product_id = ?";
         jdbcTemplate.update(deleteImagesSql, id);
 
-        // Then delete the product
         String deleteProductSql = "DELETE FROM product WHERE id = ?";
         jdbcTemplate.update(deleteProductSql, id);
     }
@@ -67,7 +64,6 @@ public class ProductImageRepositoryImpl implements CrudRepository<ProductImage> 
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
             ProductImage productImage = new ProductImage();
             productImage.setId(rs.getInt("id"));
-            // You'll need to fetch the associated product separately or use a join
             productImage.setImageUrl(rs.getString("image_url"));
             productImage.setUploadedAt(rs.getTimestamp("uploaded_at"));
             return productImage;
@@ -79,7 +75,6 @@ public class ProductImageRepositoryImpl implements CrudRepository<ProductImage> 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             ProductImage productImage = new ProductImage();
             productImage.setId(rs.getInt("id"));
-            // You'll need to fetch the associated product separately or use a join
             productImage.setImageUrl(rs.getString("image_url"));
             productImage.setUploadedAt(rs.getTimestamp("uploaded_at"));
             return productImage;

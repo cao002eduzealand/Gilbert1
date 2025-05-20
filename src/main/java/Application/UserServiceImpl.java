@@ -46,6 +46,11 @@ public class UserServiceImpl implements ServiceInterface<User> {
 
     public User authenticeUser(String username, String password){return repository.authenticateUser(username, password);}
 
+    public void updateUserCompany(int userId, int companyId){
+       repository.updateUserCompany(userId, companyId);
+    }
+
+
 //    public void updateProfilePicture(int userId, String profilePictureURL) {
 //        userRepositoryImpl.updateProfilePicture(userId, profilePictureURL);
 //    }

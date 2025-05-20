@@ -127,7 +127,7 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
             return p;
         }, id);
 
-        // Now fetch the complete related entities
+
         try {
             // Fetch seller
             if (product.getSeller() != null) {
@@ -241,17 +241,17 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
             System.out.println("  Article ID: " + rs.getInt("clothing_article_id"));
             System.out.println("  Condition ID: " + rs.getInt("condition_id"));
 
-            // Create the brand object with just the ID for now
+            // Create the brand object with just the ID
             Brand brand = new Brand();
             brand.setId(rs.getInt("brand_id"));
             product.setBrand(brand);
 
-            // Create the clothing article object with just the ID for now
+            // Create the clothing article object with just the ID
             ClothingArticle article = new ClothingArticle();
             article.setId(rs.getInt("clothing_article_id"));
             product.setClothingArticle(article);
 
-            // Create the condition object with just the ID for now
+            // Create the condition object with just the ID
             ProductCondition condition = new ProductCondition();
             condition.setId(rs.getInt("condition_id"));
             product.setCondition(condition);
@@ -364,8 +364,4 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
         String sql = "SELECT * FROM product_condition";
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ProductCondition.class));
     }
-
-
-
-
 }

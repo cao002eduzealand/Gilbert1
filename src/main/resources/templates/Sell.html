@@ -97,6 +97,11 @@
             font-size: 16px;
         }
 
+        .sell-container select:disabled {
+            background-color: #f5f5f5;
+            color: #999;
+        }
+
         .sell-container button {
             background-color: #004224;
             color: #f8f0e5;
@@ -110,6 +115,25 @@
 
         .sell-container button:hover {
             background-color: #423a26;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #004224;
+        }
+
+        .error-message {
+            color: #a02c2c;
+            background-color: #f0e0e0;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -136,47 +160,159 @@
 
 <!-- SELL FORM -->
 <div class="sell-container">
-    <h2>Opret en ny listing</h2>
+    <h2>Create a new listing</h2>
+
+    <!-- Error message if any -->
+    <div th:if="${error}" class="error-message" th:text="${error}"></div>
+
     <form method="post" action="/ProductReview" enctype="multipart/form-data">
-        <!-- Brand Dropdown - using name instead of binding directly -->
-        <select name="brandId" required>
-            <option value="" disabled selected>Vælg brand</option>
-            <option th:each="brand : ${brands}" th:value="${brand.id}" th:text="${brand.brandName}"></option>
-        </select>
+        <!-- Brand Dropdown -->
+        <div class="form-group">
+            <label for="brandId">Brand</label>
+            <select id="brandId" name="brandId" required>
+                <option value="" disabled selected>Choose brand</option>
+                <option th:each="brand : ${brands}" th:value="${brand.id}" th:text="${brand.brandName}"></option>
+            </select>
+        </div>
 
         <!-- Model Name -->
-        <input type="text" name="modelName" placeholder="Modelnavn" required />
+        <div class="form-group">
+            <label for="modelName">Model Name</label>
+            <input type="text" id="modelName" name="modelName" placeholder="Product model name" required />
+        </div>
 
-        <!-- Clothing Article Type Dropdown -->
-        <select name="clothingArticleId" required>
-            <option value="" disabled selected>Vælg type</option>
-            <option th:each="article : ${clothingArticles}" th:value="${article.id}" th:text="${article.name}"></option>
-        </select>
+        <!-- Category, Subcategory, Clothing Article cascading selection -->
+        <div class="form-group">
+            <label for="categoryId">Category</label>
+            <select id="categoryId" name="categoryId" required>
+                <option value="" disabled selected>Choose category</option>
+                <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="subcategoryId">Subcategory</label>
+            <select id="subcategoryId" name="subcategoryId" required disabled>
+                <option value="" disabled selected>First, select a category</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="clothingArticleId">Clothing article</label>
+            <select id="clothingArticleId" name="clothingArticleId" required disabled>
+                <option value="" disabled selected>First, select a subcategory</option>
+            </select>
+        </div>
 
         <!-- Condition Dropdown -->
-        <select name="conditionId" required>
-            <option value="" disabled selected>Vælg tilstand</option>
-            <option th:each="condition : ${conditions}" th:value="${condition.id}" th:text="${condition.condition}"></option>
-        </select>
+        <div class="form-group">
+            <label for="conditionId">Condition</label>
+            <select id="conditionId" name="conditionId" required>
+                <option value="" disabled selected>Choose a condition</option>
+                <option th:each="condition : ${conditions}" th:value="${condition.id}" th:text="${condition.condition}"></option>
+            </select>
+        </div>
 
         <!-- Status Dropdown -->
-        <select name="statusId" required>
-            <option value="" disabled selected>Status</option>
-            <option th:each="status : ${statuses}" th:value="${status.id}" th:text="${status.status}"></option>
-        </select>
+        <div class="form-group">
+            <label for="statusId">Status</label>
+            <select id="statusId" name="statusId" required>
+                <option value="" disabled selected>Choose a status</option>
+                <option th:each="status : ${statuses}" th:value="${status.id}" th:text="${status.status}"></option>
+            </select>
+        </div>
 
         <!-- Price -->
-        <input type="number" name="price" placeholder="Pris (DKK)" min="0" required />
+        <div class="form-group">
+            <label for="price">Price DKK</label>
+            <input type="number" id="price" name="price" placeholder="Price DKK" min="0" required />
+        </div>
 
         <!-- Description -->
-        <textarea name="description" rows="4" placeholder="Beskrivelse..."></textarea>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="4" placeholder="Description..."></textarea>
+        </div>
 
         <!-- Image Upload -->
-        <input type="file" name="productImage" accept="image/*" />
+        <div class="form-group">
+            <label for="productImage">Product Image</label>
+            <input type="file" id="productImage" name="productImage" accept="image/*" />
+        </div>
 
         <button type="submit">Opret Listing</button>
     </form>
 </div>
+
+<!-- JavaScript for dynamic category selection -->
+<script>
+    // Get form elements
+    const categorySelect = document.getElementById('categoryId');
+    const subcategorySelect = document.getElementById('subcategoryId');
+    const clothingArticleSelect = document.getElementById('clothingArticleId');
+
+    // Event listener for category selection
+    categorySelect.addEventListener('change', function() {
+        const categoryId = this.value;
+
+        // Reset subcategory and clothing article selects
+        subcategorySelect.innerHTML = '<option value="" disabled selected>Vælg underkategori</option>';
+        clothingArticleSelect.innerHTML = '<option value="" disabled selected>Vælg først en underkategori</option>';
+
+        // Disable selects until data is loaded
+        subcategorySelect.disabled = true;
+        clothingArticleSelect.disabled = true;
+
+        if (categoryId) {
+            // Fetch subcategories for selected category
+            fetch(`/api/subcategories/${categoryId}`)
+                .then(response => response.json())
+                .then(subcategories => {
+                    // Add subcategory options
+                    subcategories.forEach(subcategory => {
+                        const option = document.createElement('option');
+                        option.value = subcategory.id;
+                        option.textContent = subcategory.name;
+                        subcategorySelect.appendChild(option);
+                    });
+
+                    // Enable subcategory select
+                    subcategorySelect.disabled = false;
+                })
+                .catch(error => console.error('Error fetching subcategories:', error));
+        }
+    });
+
+    // Event listener for subcategory selection
+    subcategorySelect.addEventListener('change', function() {
+        const subcategoryId = this.value;
+
+        // Reset clothing article select
+        clothingArticleSelect.innerHTML = '<option value="" disabled selected>Vælg type</option>';
+
+        // Disable select until data is loaded
+        clothingArticleSelect.disabled = true;
+
+        if (subcategoryId) {
+            // Fetch clothing articles for selected subcategory
+            fetch(`/api/clothingArticles/${subcategoryId}`)
+                .then(response => response.json())
+                .then(clothingArticles => {
+                    // Add clothing article options
+                    clothingArticles.forEach(article => {
+                        const option = document.createElement('option');
+                        option.value = article.id;
+                        option.textContent = article.name;
+                        clothingArticleSelect.appendChild(option);
+                    });
+
+                    // Enable clothing article select
+                    clothingArticleSelect.disabled = false;
+                })
+                .catch(error => console.error('Error fetching clothing articles:', error));
+        }
+    });
+</script>
 
 </body>
 </html>

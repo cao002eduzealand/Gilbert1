@@ -1,17 +1,17 @@
 package Presentation;
 
+import Application.CompanyServiceImpl;
 import Application.ProductServiceImpl;
 import Application.UserServiceImpl;
+import Domain.Company;
 import Domain.Product;
 import Domain.ProductImage;
 import Domain.User;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -28,10 +28,11 @@ public class ProfileController {
 
     private final UserServiceImpl userService;
     private final ProductServiceImpl productService;
-
-    public ProfileController(UserServiceImpl userService, ProductServiceImpl productService) {
+    private final CompanyServiceImpl companyService;
+    public ProfileController(UserServiceImpl userService, ProductServiceImpl productService, CompanyServiceImpl companyService) {
         this.userService = userService;
         this.productService = productService;
+        this.companyService = companyService;
     }
 
     @GetMapping("/profile")
@@ -106,4 +107,33 @@ public class ProfileController {
         session.invalidate();
         return "redirect:/login";
     }
+
+    @GetMapping("/profile/createBusiness")
+    public String showCreateBusinessForm(HttpSession session, Model model){
+        User user = (User) session.getAttribute("user");
+        if (user==null){
+            return "redirect:/login";
+        }
+        model.addAttribute("company", new Company());
+        return "CompanyForm";
+    }
+
+    @PostMapping("/profile/createBusiness")
+    public String createCompany(@ModelAttribute Company company, @RequestParam String companyName,
+                                @RequestParam String companyCVRNumber, HttpSession session){
+
+    User user = (User) session.getAttribute("user");
+    if (user==null){
+        return "redirect:/login";
+    }
+    Company savedCompany = companyService.save(company);
+
+    userService.updateUserCompany(user.getId(), savedCompany.getId());
+    user.setCompany(savedCompany);
+    session.setAttribute("user", user);
+
+        return "redirect:/profile";
+
+    }
+
 }
