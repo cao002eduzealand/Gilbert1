@@ -40,4 +40,8 @@ public class CompanyServiceImpl implements ServiceInterface<Company> {
     public Company findById(int id){
         return repository.findById(id);
     }
+
+    public Company findCompanyByUser(int id){
+        return repository.findCompanyByUser(id);
+    }
 }

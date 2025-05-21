@@ -2,11 +2,9 @@ package Presentation;
 
 
 import Application.BrandServiceImpl;
+import Application.CompanyServiceImpl;
 import Application.UserServiceImpl;
-import Domain.EmailAlreadyTakenException;
-import Domain.InvalidCredentialsException;
-import Domain.User;
-import Domain.UsernameAlreadyTakenException;
+import Domain.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,8 +15,10 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController {
 
     private final UserServiceImpl userService;
-    public LoginController(UserServiceImpl userService) {
+    private final CompanyServiceImpl companyService;
+    public LoginController(UserServiceImpl userService, CompanyServiceImpl companyService) {
         this.userService = userService;
+        this.companyService = companyService;
     }
 
 
@@ -32,6 +32,9 @@ public class LoginController {
 
         try {
             User user = userService.authenticeUser(username, password);
+           Company company = companyService.findCompanyByUser(user.getId());
+           user.setCompany(company);
+
             session.setAttribute("user", user);
             return "redirect:/Gilbert";
 

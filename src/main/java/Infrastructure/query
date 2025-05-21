@@ -1,0 +1,95 @@
+create table brand(
+id int primary key auto_increment,
+name varchar(150) not null
+);
+
+create table category(
+id int primary key auto_increment,
+name varchar(100) unique not null
+);
+
+create table clothing_article(
+id int primary key auto_increment,
+name varchar(100) not null,
+subcategory_id int not null
+
+FOREIGN KEY (subcategory_id) REFERENCES subcategory(id)
+);
+
+create table company(
+id int primary key auto_increment,
+company_name varchar(150) not null,
+VAT_number varchar(100) not null
+);
+
+create table product(
+id int primary key auto_increment,
+brand_id int not null,
+clothing_article_id int not null,
+seller_id int not null,
+status_id int not null default 1,
+condition_id int not null,
+model_name varchar(150),
+description varchar(2000) not null,
+price double not null,
+date_uploaded TimeStamp not null default CURRENT_TIMESTAMP,
+
+FOREIGN KEY (brand_id) REFERENCES brand(id),
+FOREIGN KEY (clothing_article_id) REFERENCES clothing_article(id),
+FOREIGN KEY (seller_id) REFERENCES user(id) ON DELETE CASCADE,
+FOREIGN KEY (status_id) REFERENCES product_status(id),
+FOREIGN KEY (condition_id) REFERENCES product_condition(id)
+
+);
+create table product_condition(
+id int primary key auto_increment,
+name varchar(200) not null,
+);
+
+create table product_image(
+id int primary key auto_increment,
+product_id int not null,
+image_url text not null,
+uploaded_at TimeStamp default CURRENT_TIMESTAMP
+
+FOREIGN KEY (product_id) REFERENCES product(id)
+);
+
+create table product_status(
+id int primary key auto_increment,
+name varchar(100) not null
+);
+
+create table roles(
+id int primary key auto_increment,
+role varchar(100) not null
+);
+
+create table subcategory(
+id int primary key auto_increment,
+name varchar(100) not null,
+category_id int not null,
+FOREIGN KEY (category_id) REFERENCES category(id)
+);
+
+create table user(
+id int primary key auto_increment,
+fName varchar(100) not null,
+lName varchar(100) not null,
+display_name varchar(100) not null,
+user_name varchar(100) not null,
+email varchar(150) unique not null,
+password varchar(150) not null,
+profile_picture TEXT null,
+created_at TimeStamp default CURRENT_TIMESTAMP,
+last_login TimeStamp NULL,
+shipping_full_name varchar(255) NUll,
+shipping_address TEXT NULL,
+shipping_zip varchar(20) NULL,
+shipping_city varchar(100) NULL,
+shipping_country varchar(100) NULL,
+role_id int not null default 1,
+company_id int NULL,
+FOREIGN KEY (role_id) REFERENCES roles(id)
+
+);

@@ -46,6 +46,22 @@
     .nav-right {
       justify-content: flex-end;
     }
+    .nav-button{
+      background: none;
+      border: none;
+      color: #f8f0e5;
+      font-size: 16px;
+      cursor: pointer;
+      font-family: inherit;
+      padding: 0;
+      text-decoration: none;
+    }
+    .nav-button:hover {
+      background-color: #423a26;
+      border-radius: 6px;
+      padding: 4px 8px;
+      transition: 0.2s;
+    }
 
     .nav-center {
       display: flex;
@@ -315,6 +331,28 @@
       background-color: #423a26;
       color: #f8f0e5;
     }
+    .tooltip-container .tooltip-text {
+      visibility: hidden;
+      background-color: #004224;
+      color: #f8f0e5;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%; /* Show above the icon */
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      white-space: nowrap;
+    }
+
+    .tooltip-container:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+
 
     /* Make grid responsive */
     @media (max-width: 768px) {
@@ -348,19 +386,19 @@
 
   <div class="nav-right">
     <form action="/logout" method="post">
-      <button type="submit">Log out</button>
+      <button type="submit" class="nav-button">Log out</button>
     </form>
     <a href="/Sell">Sell</a>
     <a href="/notifications">Notifications</a>
   </div>
 </div>
 
+
 <!-- PROFILE HEADER -->
-<div class="profile-header">
+<div class="profile-header" style="position: relative;">
   <form method="post" action="/profile/uploadImage" enctype="multipart/form-data">
     <!-- Profile Picture -->
-    <label for="imageUpload">
-      <!-- If user has a profile picture -->
+    <label for="imageUpload" style="cursor: pointer;">
       <img th:if="${user.profilePictureURL != null}"
            th:src="@{${user.profilePictureURL}}"
            alt="Profile Picture" />
@@ -368,7 +406,6 @@
       <img th:if="${user.profilePictureURL == null}"
            th:src="@{/Images/Profile.svg}"
            alt="Default Profile Picture" />
-
     </label>
 
     <input
@@ -383,17 +420,23 @@
 
   <div class="profile-info">
     <p class="username" th:text="${user.displayName}">Default Name</p>
-
-    <div class="badge">PRO</div>
   </div>
 
+  <div class="business-info" th:if="${user.company != null}" style="display: flex; align-items: center; gap: 10px; color: #004224; font-size: 16px; margin-left: 20px;">
+    <div class="tooltip-container" style="position: relative; display: inline-block;">
+      <img src="/Images/verify.svg" alt="Company Icon" style="height: 24px; width: 24px;" />
+      <span class="tooltip-text">Verified Company</span>
+    </div>
 
-  <div class="business-info" th:if="${user.company != null}">
-    <p class ="business-button" th:text="${user.company.companyName}">Company</p>
-
+    <div>
+      <p style="margin: 0; font-weight: bold;" th:text="${user.company.companyName}">Company Name</p>
+      <p style="margin: 0;">CVR: <span th:text="${user.company.companyCVRNumber}">12345678</span></p>
+    </div>
   </div>
 
-
+  <div th:if="${user.company == null}" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%);">
+    <a href="/profile/createBusiness" style="background-color: #004224; color: #f8f0e5; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold;">Setup</a>
+  </div>
 
 </div>
 
@@ -432,7 +475,7 @@
     <p th:text="${errorMessage}">Error message</p>
   </div>
 
-  <div class="profile-content">
+
     <div class="listings-container">
       <h3>My Listings</h3>
 

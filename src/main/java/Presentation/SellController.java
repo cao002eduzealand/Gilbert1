@@ -72,7 +72,6 @@ public class SellController {
 
         model.addAttribute("categories", filteredCategories);
         model.addAttribute("conditions", conditionService.findAll());
-        model.addAttribute("statuses", statusService.findAll());
 
         model.addAttribute("user", user);
         return "Sell";
@@ -97,7 +96,6 @@ public class SellController {
                                     @RequestParam("subcategoryId") int subcategoryId,
                                     @RequestParam("clothingArticleId") int clothingArticleId,
                                     @RequestParam("conditionId") int conditionId,
-                                    @RequestParam("statusId") int statusId,
                                     @RequestParam("modelName") String modelName,
                                     @RequestParam("description") String description,
                                     @RequestParam("price") double price,
@@ -118,7 +116,6 @@ public class SellController {
                 model.addAttribute("brands", brandService.findAll());
                 model.addAttribute("categories", categoryService.findAll());
                 model.addAttribute("conditions", conditionService.findAll());
-                model.addAttribute("statuses", statusService.findAll());
 
                 return "Sell";
             }
@@ -128,7 +125,6 @@ public class SellController {
             product.setBrand(brandService.findById(brandId));
             product.setClothingArticle(clothingArticle);
             product.setCondition(conditionService.findById(conditionId));
-            product.setProductStatus(statusService.findById(statusId));
             product.setModelName(modelName);
             product.setDescription(description);
             product.setPrice(price);
@@ -188,7 +184,8 @@ public class SellController {
             }
 
             // Add a success message
-            session.setAttribute("successMessage", "Your product has been successfully listed!");
+            session.setAttribute("successMessage", "Your product has been successfully submitted for review! An employee has to approve" +
+                    "the listing before it goes on the store");
 
             // Add flag to force refresh product images
             session.setAttribute("refreshProducts", true);
@@ -204,7 +201,6 @@ public class SellController {
             model.addAttribute("brands", brandService.findAll());
             model.addAttribute("clothingArticles", clothingArticleService.findAll());
             model.addAttribute("conditions", conditionService.findAll());
-            model.addAttribute("statuses", statusService.findAll());
 
             return "Sell";
         }

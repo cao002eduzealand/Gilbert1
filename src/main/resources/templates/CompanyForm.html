@@ -1,12 +1,146 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @font-face {
+            font-family: 'TheSeaSons';
+            src: url('/Fonts/TheSeaSons.ttf');
+        }
 
-  sofjafjiogewgwe
+        body {
+            margin: 0;
+            font-family: 'TheSeaSons', sans-serif;
+            background-color: #f8f0e5;
+        }
+
+        /* NAVIGATION */
+        .desktop-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #004224;
+            height: 90px;
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .nav-left,
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 30%;
+        }
+
+        .nav-left {
+            justify-content: flex-start;
+        }
+
+        .nav-right {
+            justify-content: flex-end;
+        }
+
+        .nav-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40%;
+        }
+
+        .desktop-nav a {
+            color: #f8f0e5;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .desktop-nav a:hover {
+            background-color: #423a26;
+            border-radius: 6px;
+            padding: 4px 8px;
+            transition: 0.2s;
+        }
+
+        .search-bar input {
+            height: 30px;
+            padding: 5px;
+            width: 250px;
+            font-size: 16px;
+            border-radius: 35px;
+            font-weight: 500;
+            border: none;
+        }
+        .edit-container {
+            margin: 120px auto 50px; /* Push down below fixed nav */
+            color: #f8f0e5;
+            max-width: 600px;
+            padding: 20px;
+            background: #004224; /* contrast background so inputs stand out */
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: transparent;
+            color: #f8f0e5;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            font-family: 'TheSeaSons', sans-serif;
+            transition: background-color 0.2s, padding 0.2s;
+        }
+
+        button:hover {
+            background-color: #423a26;
+            border-radius: 6px;
+            padding: 4px 8px;
+        }
+
+
+    </style>
+
+
 </head>
 <body>
 
+<div class="edit-container">
+    <h2>Set Account Up as Business</h2>
+
+    <form method="post" th:action="@{/profile/createBusiness}" th:object="${company}">
+        <input type="text" th:field="*{companyName}" placeholder="Company Name" required />
+        <input type="text" th:field="*{companyCVRNumber}" placeholder="CVR Number" required />
+        <button type="submit">Submit</button>
+    </form>
+
+
+</div>
+
+<div class="desktop-nav">
+    <div class="nav-left">
+        <form action="/search" method="get" class="search-bar">
+            <input type="text" name="query" placeholder="Search..." />
+        </form>
+        <a href="/favourites">Favourites</a>
+    </div>
+
+    <div class="nav-center">
+        <a href="/Gilbert"><img src="/Images/Gilbert.png" alt="Home" style="height: 75px;"></a>
+    </div>
+
+    <div class="nav-right">
+        <a href="/profile">Me/Sell</a>
+        <a href="/notifications">Notifications</a>
+    </div>
+</div>
+
+
+
 </body>
+
+
 </html>

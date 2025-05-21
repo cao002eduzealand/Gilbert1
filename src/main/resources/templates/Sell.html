@@ -213,15 +213,6 @@
             </select>
         </div>
 
-        <!-- Status Dropdown -->
-        <div class="form-group">
-            <label for="statusId">Status</label>
-            <select id="statusId" name="statusId" required>
-                <option value="" disabled selected>Choose a status</option>
-                <option th:each="status : ${statuses}" th:value="${status.id}" th:text="${status.status}"></option>
-            </select>
-        </div>
-
         <!-- Price -->
         <div class="form-group">
             <label for="price">Price DKK</label>

@@ -1,6 +1,7 @@
 package Infrastructure;
 
 import Domain.Company;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -60,6 +61,29 @@ public class CompanyRepositoryImpl implements CrudRepository<Company> {
         String sql = "SELECT * FROM company WHERE id=?";
         return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Company.class), id);
     }
+
+
+    public Company findCompanyByUser(int userId) {
+        String sql = """
+        SELECT c.id, c.company_name, c.VAT_number
+        FROM company c
+        JOIN user u ON u.company_id = c.id
+        WHERE u.id = ?
+    """;
+
+        try {
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+                Company company = new Company();
+                company.setId(rs.getInt("id"));
+                company.setCompanyName(rs.getString("company_name"));
+                company.setCompanyCVRNumber(rs.getString("VAT_number"));
+                return company;
+            }, userId);
+        } catch (EmptyResultDataAccessException e) {
+            return null; // No company linked to user
+        }
+    }
+
 
 
 

@@ -34,7 +34,7 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
             ps.setInt(1, product.getBrand().getId());
             ps.setInt(2, product.getClothingArticle().getId());
             ps.setInt(3, product.getSeller().getId());
-            ps.setInt(4, product.getProductStatus().getId());
+            ps.setInt(4,1);
             ps.setInt(5, product.getCondition().getId());
             ps.setString(6, product.getModelName());
             ps.setString(7, product.getDescription());
@@ -364,4 +364,17 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
         String sql = "SELECT * FROM product_condition";
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ProductCondition.class));
     }
+
+    // Searching for categorytree dropdowns
+
+
+
+
+
+
+
+
+
+
+
 }

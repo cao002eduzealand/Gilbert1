@@ -111,10 +111,6 @@
       color: #f8f0e5;
     }
 
-    .sold-button {
-      background-color: #9e7c35;
-      color: #f8f0e5;
-    }
 
     .delete-button {
       background-color: #a02c2c;
@@ -206,15 +202,6 @@
               th:selected="${product.condition != null && product.condition.id == condition.id}"></option>
     </select>
 
-    <!-- Status Dropdown -->
-    <select name="statusId" required>
-      <option value="" disabled>Select status</option>
-      <option th:each="status : ${statuses}"
-              th:value="${status.id}"
-              th:text="${status.status}"
-              th:selected="${product.productStatus != null && product.productStatus.id == status.id}"></option>
-    </select>
-
     <!-- Price -->
     <input type="number" name="price" th:value="${product.price}" placeholder="Price (DKK)" min="0" required />
 
@@ -237,8 +224,6 @@
       <!-- Update Button -->
       <button type="submit" name="action" value="update" class="update-button">Update Listing</button>
 
-      <!-- Mark as Sold Button -->
-      <button type="submit" name="action" value="markSold" class="sold-button">Mark as Sold</button>
 
       <!-- Delete Button -->
       <button type="submit" name="action" value="delete" class="delete-button"

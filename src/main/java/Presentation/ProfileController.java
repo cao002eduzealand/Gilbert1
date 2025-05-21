@@ -42,6 +42,7 @@ public class ProfileController {
             return "redirect:/login";
         }
 
+
         // Check for any success messages
         String successMessage = (String) session.getAttribute("successMessage");
         if (successMessage != null) {
@@ -85,6 +86,7 @@ public class ProfileController {
         }
 
         model.addAttribute("user", user);
+
         return "profile";
     }
 
@@ -114,13 +116,16 @@ public class ProfileController {
         if (user==null){
             return "redirect:/login";
         }
-        model.addAttribute("company", new Company());
+        Company company = user.getCompany();
+        if (company==null){
+            company = new Company();
+        }
+        model.addAttribute("company", company);
         return "CompanyForm";
     }
 
     @PostMapping("/profile/createBusiness")
-    public String createCompany(@ModelAttribute Company company, @RequestParam String companyName,
-                                @RequestParam String companyCVRNumber, HttpSession session){
+    public String createCompany(@ModelAttribute Company company, HttpSession session){
 
     User user = (User) session.getAttribute("user");
     if (user==null){
