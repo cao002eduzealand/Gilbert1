@@ -30,7 +30,17 @@ public class SubCategoryRepositoryImpl implements CrudRepository<SubCategory> {
     @Override
     public List<SubCategory> findAll() {
         String sql = "SELECT * FROM subcategory";
-       return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(SubCategory.class));
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            SubCategory subCategory = new SubCategory();
+            subCategory.setId(rs.getInt("id"));
+            subCategory.setName(rs.getString("name"));
+
+            Category category = new Category();
+            category.setId(rs.getInt("category_id"));
+            subCategory.setCategory(category);
+
+            return subCategory;
+        });
     }
 
     @Override
@@ -49,11 +59,32 @@ public class SubCategoryRepositoryImpl implements CrudRepository<SubCategory> {
     @Override
     public SubCategory findById(int id) {
         String sql = "SELECT * FROM subcategory WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(SubCategory.class), id);
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+            SubCategory subCategory = new SubCategory();
+            subCategory.setId(rs.getInt("id"));
+            subCategory.setName(rs.getString("name"));
+
+            Category category = new Category();
+            category.setId(rs.getInt("category_id")); // Kun ID sættes – resten kan hentes senere hvis nødvendigt
+            subCategory.setCategory(category);
+
+            return subCategory;
+        }, id);
     }
 
+
     public List<SubCategory> findByCategoryId(int id) {
-        String sql = "select * from subcategory where category_id=?";
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(SubCategory.class), id);
+        String sql = "SELECT * FROM subcategory WHERE category_id = ?";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            SubCategory subCategory = new SubCategory();
+            subCategory.setId(rs.getInt("id"));
+            subCategory.setName(rs.getString("name"));
+
+            Category category = new Category();
+            category.setId(rs.getInt("category_id"));
+            subCategory.setCategory(category);
+
+            return subCategory;
+        }, id);
     }
 }

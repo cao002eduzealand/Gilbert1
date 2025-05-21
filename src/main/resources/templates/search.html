@@ -1,10 +1,231 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8" />
+    <title th:text="${searchTitle}">Search Results – Gilbert's Shop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/global.css" /> <!-- valgfrit hvis du har global styling -->
+    <style>
+        @font-face {
+            font-family: 'TheSeaSons';
+            src: url('/Fonts/TheSeaSons.ttf');
+        }
+
+        body {
+            margin: 0;
+            font-family: 'TheSeaSons', sans-serif;
+            background-color: #f8f0e5;
+        }
+
+        .desktop-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #004224;
+            height: 90px;
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .nav-left,
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 30%;
+        }
+
+        .nav-left {
+            justify-content: flex-start;
+        }
+
+        .nav-right {
+            justify-content: flex-end;
+        }
+
+        .nav-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40%;
+        }
+
+        .desktop-nav a {
+            color: #f8f0e5;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .desktop-nav a:hover {
+            background-color: #423a26;
+            border-radius: 6px;
+            padding: 4px 8px;
+            transition: 0.2s;
+        }
+
+        .search-bar input {
+            height: 30px;
+            padding: 5px;
+            width: 250px;
+            font-size: 16px;
+            border: none;
+            border-radius: 35px;
+            font-weight: 500;
+        }
+
+        .search-header {
+            padding-top: 130px;
+            text-align: center;
+        }
+
+        .search-header h2 {
+            color: #004224;
+            font-size: 28px;
+        }
+
+        .search-header p {
+            color: #423a26;
+            font-size: 18px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .product-card {
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .product-image {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-details {
+            padding: 12px;
+        }
+
+        .product-details h4 {
+            margin: 0 0 8px;
+            color: #004224;
+            font-size: 16px;
+        }
+
+        .product-type, .product-condition {
+            margin: 4px 0;
+            color: #423a26;
+            font-size: 14px;
+        }
+
+        .product-price {
+            font-weight: bold;
+            color: #004224;
+            font-size: 18px;
+            margin: 8px 0;
+        }
+
+        .view-btn {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 4px;
+            background-color: #004224;
+            color: #f8f0e5;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .no-results {
+            text-align: center;
+            color: #423a26;
+            margin-top: 40px;
+            font-size: 18px;
+        }
+
+        @media (max-width: 480px) {
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
+
 <body>
+
+<!-- DESKTOP NAVIGATION -->
+<div class="desktop-nav">
+    <div class="nav-left">
+        <form action="/search" method="get" class="search-bar">
+            <input type="text" name="query" placeholder="Search..." />
+        </form>
+        <a href="/favourites">Favourites</a>
+    </div>
+
+    <div class="nav-center">
+        <a href="/Gilbert"><img src="/Images/Gilbert.png" alt="Home" style="height: 75px;"></a>
+    </div>
+
+    <div class="nav-right">
+        <a href="/profile">Me/Sell</a>
+        <a href="/notifications">Notifications</a>
+    </div>
+</div>
+
+<!-- HEADER -->
+<div class="search-header">
+    <h2 th:text="${searchTitle}">Search Result</h2>
+    <p th:text="'Showing results for: ' + ${searchResult}">Result info</p>
+</div>
+
+<!-- PRODUCT GRID -->
+<div th:if="${not #lists.isEmpty(products)}" class="product-grid">
+    <div th:each="product : ${products}" class="product-card">
+        <div class="product-image">
+            <img th:if="${product.images != null and not #lists.isEmpty(product.images) and product.images[0].imageUrl != null}"
+                 th:src="${product.images[0].imageUrl}"
+                 alt="Product Image" />
+            <img th:unless="${product.images != null and not #lists.isEmpty(product.images) and product.images[0].imageUrl != null}"
+                 src="/Images/placeholder-product.png"
+                 alt="No Image" />
+        </div>
+        <div class="product-details">
+            <h4 th:text="${product.brand != null ? product.brand.brandName : 'Unknown'} + ' ' + ${product.modelName}">Brand Model</h4>
+            <p class="product-type" th:text="${product.clothingArticle != null ? product.clothingArticle.name : 'Type'}">Type</p>
+            <p class="product-condition" th:text="${product.condition != null ? product.condition.condition : 'Condition'}">Condition</p>
+            <p class="product-price" th:text="${'DKK ' + product.price}">DKK 500</p>
+            <a th:href="@{'/product/' + ${product.id}}" class="view-btn">View</a>
+        </div>
+    </div>
+</div>
+
+<!-- NO RESULTS -->
+<div th:if="${#lists.isEmpty(products)}" class="no-results">
+    <p>No listings found for your search.</p>
+</div>
 
 </body>
 </html>
