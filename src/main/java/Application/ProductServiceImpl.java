@@ -39,4 +39,20 @@ public class ProductServiceImpl implements ServiceInterface<Product> {
     public List<ProductCondition> findAllProductConditions(){
       return  repository.findAllProductConditions();
     }
+
+    // methods for category bar search
+
+    public List<Product> findAllByCategoryId(int categoryId){
+        return repository.findAllByCategoryId(categoryId);
+    }
+
+    public List<Product> findAllBySubCategoryId(int subCategoryId){
+        return repository.findAllBySubCategoryId(subCategoryId);
+    }
+
+    public List<Product> findAllByClothingArticleId(int clothingArticleId){return repository.findAllByClothingArticleId(clothingArticleId);}
+
 }
+
+
+

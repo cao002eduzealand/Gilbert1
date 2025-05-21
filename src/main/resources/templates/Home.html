@@ -297,18 +297,18 @@
 <div class="category-bar">
   <div th:each="entry : ${categoryTree}" class="category-item">
     <!-- Category Link -->
-    <a href="#" th:text="${entry.key.name}"></a>
+    <a th:href="@{'/category/' + ${entry.key.id}}" th:text="${entry.key.name}"></a>
 
     <!-- Subcategory dropdown -->
     <div class="dropdown">
       <div th:each="sub : ${entry.value.keySet()}" class="subcat-item">
         <!-- Subcategory Link -->
-        <a href="#" th:text="${sub.name}"></a>
+        <a th:href="@{'/subcategory/' + ${sub.id}}" th:text="${sub.name}"></a>
 
         <!-- Nested dropdown for clothing articles -->
         <div class="nested-dropdown">
           <a th:each="article : ${entry.value.get(sub)}"
-             href="#"
+             th:href="@{'/article/' + ${article.id}}"
              th:text="${article.name}"></a>
         </div>
       </div>
