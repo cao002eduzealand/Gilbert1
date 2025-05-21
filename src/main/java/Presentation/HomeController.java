@@ -3,6 +3,7 @@ package Presentation;
 import Application.*;
 import Domain.*;
 import Infrastructure.ClothingArticleRepositoryImpl;
+import Infrastructure.ProductRepositoryImpl;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,14 +24,15 @@ public class HomeController {
     private final SubCategoryServiceImpl subCategoryService;
     private final ClothingArticleServiceImpl clothingArticleService;
     private final ProductServiceImpl productService;
+    private final ProductRepositoryImpl productRepositoryImpl;
 
     public HomeController(CategoryServiceImpl categoryService, SubCategoryServiceImpl subCategoryService,
-                          ClothingArticleServiceImpl clothingArticleService, ProductServiceImpl productService) {
+                          ClothingArticleServiceImpl clothingArticleService, ProductServiceImpl productService, ProductRepositoryImpl productRepositoryImpl) {
         this.categoryService = categoryService;
         this.subCategoryService = subCategoryService;
         this.clothingArticleService = clothingArticleService;
         this.productService = productService;
-
+        this.productRepositoryImpl = productRepositoryImpl;
     }
 
     @RequestMapping("/Gilbert")
@@ -66,6 +68,7 @@ public class HomeController {
     @GetMapping("/category/{categoryId}")
     public String getProductsByCategory(@PathVariable int categoryId, Model model) {
         List<Product> products = productService.findAllByCategoryId(categoryId);
+        productService.populateImagesForProducts(products);
         Category category = categoryService.findById(categoryId);
 
         model.addAttribute("products", products);
@@ -81,6 +84,7 @@ public class HomeController {
         List<Product> products = productService.findAllBySubCategoryId(subCategoryId);
         SubCategory subCategory = subCategoryService.findById(subCategoryId);
         Category category = categoryService.findById(subCategory.getCategory().getId());
+        productService.populateImagesForProducts(products);
 
         model.addAttribute("products", products);
         model.addAttribute("searchTitle", category.getName() + " • " + subCategory.getName());
@@ -95,7 +99,7 @@ public class HomeController {
         List<Product> products = productService.findAllByClothingArticleId(clothingArticleId);
         // You would need to fetch the clothing article details here
         // For demonstration, we'll use a placeholder
-
+        productService.populateImagesForProducts(products);
         model.addAttribute("products", products);
         model.addAttribute("searchTitle", "Product Search");
         model.addAttribute("searchType", "article");
@@ -105,9 +109,8 @@ public class HomeController {
     }
     @GetMapping("/search")
     public String searchProducts(@RequestParam(required = false) String query, Model model) {
-        // This would require an additional repository method to search by text
-        // For now, we'll return all products
-        List<Product> products = productService.findAll();
+        List<Product> products = productRepositoryImpl.searchProducts(query);
+        productService.populateImagesForProducts(products);
 
         model.addAttribute("products", products);
         model.addAttribute("searchTitle", "Search Results");
@@ -116,4 +119,5 @@ public class HomeController {
 
         return "search";
     }
+
 }

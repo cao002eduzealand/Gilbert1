@@ -52,6 +52,9 @@ public class ProductServiceImpl implements ServiceInterface<Product> {
 
     public List<Product> findAllByClothingArticleId(int clothingArticleId){return repository.findAllByClothingArticleId(clothingArticleId);}
 
+    public void populateImagesForProducts(List<Product> products){
+       repository.populateImagesForProducts(products);
+    }
 }
 
 

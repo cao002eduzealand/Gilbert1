@@ -7,6 +7,7 @@ public class ClothingArticle {
     private SubCategory subcategory;
 
     public ClothingArticle() {}
+    public ClothingArticle(int id, String name){this.id=id; this.name=name;}
     public ClothingArticle(int id, String name, SubCategory subcategory) {
         this.id = id;
         this.name = name;
