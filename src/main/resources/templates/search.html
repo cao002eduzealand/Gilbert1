@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <title th:text="${searchTitle}">Search Results – Gilbert's Shop</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/css/global.css" /> <!-- valgfrit hvis du har global styling -->
     <style>
         @font-face {
             font-family: 'TheSeaSons';
@@ -17,6 +16,7 @@
             background-color: #f8f0e5;
         }
 
+        /* DESKTOP NAVIGATION */
         .desktop-nav {
             display: flex;
             justify-content: center;
@@ -166,9 +166,61 @@
             font-size: 18px;
         }
 
+        /* MOBILE NAVIGATION */
+        .mobile-nav {
+            display: none;
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 768px) {
+            /* Hide desktop navigation on mobile */
+            .desktop-nav {
+                display: none;
+            }
+
+            /* Show mobile navigation */
+            .mobile-nav {
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                background-color: #004224;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 60px;
+                z-index: 1000;
+            }
+
+            .mobile-nav a img {
+                height: 24px;
+            }
+
+            /* Adjust search header for mobile */
+            .search-header {
+                padding-top: 20px;
+            }
+
+            .search-header h2 {
+                font-size: 24px;
+            }
+
+            .search-header p {
+                font-size: 16px;
+            }
+
+            /* Adjust product grid for mobile */
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+                padding: 20px 15px 80px; /* Add bottom padding for mobile nav */
+            }
+        }
+
         @media (max-width: 480px) {
             .product-grid {
                 grid-template-columns: 1fr;
+                padding: 20px 10px 80px;
             }
         }
     </style>
@@ -225,6 +277,15 @@
 <!-- NO RESULTS -->
 <div th:if="${#lists.isEmpty(products)}" class="no-results">
     <p>No listings found for your search.</p>
+</div>
+
+<!-- MOBILE NAVIGATION -->
+<div class="mobile-nav">
+    <a href="/Gilbert"><img src="/Images/Home.svg" alt="Home" /></a>
+    <a href="/search"><img src="/Images/Search.svg" alt="Search" /></a>
+    <a href="/favourites"><img src="/Images/Heart.svg" alt="Favourites" /></a>
+    <a href="/profile"><img src="/Images/Profile.svg" alt="Me/Sell" /></a>
+    <a href="/notifications"><img src="/Images/Bell.svg" alt="Notifications" /></a>
 </div>
 
 </body>
