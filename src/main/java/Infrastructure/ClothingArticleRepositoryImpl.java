@@ -3,8 +3,6 @@ package Infrastructure;
 import Domain.Category;
 import Domain.ClothingArticle;
 import Domain.SubCategory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -40,17 +38,17 @@ public class ClothingArticleRepositoryImpl implements CrudRepository<ClothingArt
             article.setId(rs.getInt("id"));
             article.setName(rs.getString("name"));
 
-            // Create subcategory object
+
             SubCategory subcategory = new SubCategory();
             subcategory.setId(rs.getInt("subcategory_id"));
             subcategory.setName(rs.getString("subcategory_name"));
 
-            // Set category_id from join
+
             Category category = new Category();
             category.setId(rs.getInt("category_id"));
             subcategory.setCategory(category);
 
-            // Set subcategory to article
+
             article.setSubcategory(subcategory);
 
             return article;
@@ -83,17 +81,17 @@ public class ClothingArticleRepositoryImpl implements CrudRepository<ClothingArt
             article.setId(rs.getInt("id"));
             article.setName(rs.getString("name"));
 
-            // Create subcategory object
+
             SubCategory subcategory = new SubCategory();
             subcategory.setId(rs.getInt("subcategory_id"));
             subcategory.setName(rs.getString("subcategory_name"));
 
-            // Set category_id from join
+
             Category category = new Category();
             category.setId(rs.getInt("category_id"));
             subcategory.setCategory(category);
 
-            // Set subcategory to article
+
             article.setSubcategory(subcategory);
 
             return article;
@@ -111,17 +109,17 @@ public class ClothingArticleRepositoryImpl implements CrudRepository<ClothingArt
             article.setId(rs.getInt("id"));
             article.setName(rs.getString("name"));
 
-            // Create subcategory object
+
             SubCategory subcategory = new SubCategory();
             subcategory.setId(rs.getInt("subcategory_id"));
             subcategory.setName(rs.getString("subcategory_name"));
 
-            // Set category_id from join
+
             Category category = new Category();
             category.setId(rs.getInt("category_id"));
             subcategory.setCategory(category);
 
-            // Set subcategory to article
+
             article.setSubcategory(subcategory);
 
             return article;

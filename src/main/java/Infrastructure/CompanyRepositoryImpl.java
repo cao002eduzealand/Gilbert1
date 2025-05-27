@@ -80,7 +80,7 @@ public class CompanyRepositoryImpl implements CrudRepository<Company> {
                 return company;
             }, userId);
         } catch (EmptyResultDataAccessException e) {
-            return null; // No company linked to user
+            return null;
         }
     }
 

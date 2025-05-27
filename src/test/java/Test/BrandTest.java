@@ -33,8 +33,8 @@ private JdbcTemplate jdbcTemplate;
         Brand brand = new Brand();
 
         // Assert
-        assertEquals(0, brand.getId()); // default int value
-        assertNull(brand.getBrandName()); // default String value
+        assertEquals(0, brand.getId());
+        assertNull(brand.getBrandName());
     }
 
     @Test

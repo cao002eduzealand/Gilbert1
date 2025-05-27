@@ -10,18 +10,15 @@ import Domain.User;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+
 
 @Controller
 public class ProfileController {
@@ -43,14 +40,14 @@ public class ProfileController {
         }
 
 
-        // Check for any success messages
+
         String successMessage = (String) session.getAttribute("successMessage");
         if (successMessage != null) {
             model.addAttribute("successMessage", successMessage);
             session.removeAttribute("successMessage");
         }
 
-        // Check if we need to force refresh products
+
         boolean refreshProducts = session.getAttribute("refreshProducts") != null;
         if (refreshProducts) {
             session.removeAttribute("refreshProducts");
@@ -60,7 +57,7 @@ public class ProfileController {
             // Fetch user's listings
             List<Product> userProducts = productService.getProductsByUser(user);
 
-            // Debug - log product details including images
+
             System.out.println("User " + user.getUserName() + " has " + userProducts.size() + " products");
             for (Product product : userProducts) {
                 System.out.println("Product ID: " + product.getId());

@@ -2,7 +2,7 @@ package Infrastructure;
 
 import Domain.Category;
 import Domain.SubCategory;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -65,7 +65,7 @@ public class SubCategoryRepositoryImpl implements CrudRepository<SubCategory> {
             subCategory.setName(rs.getString("name"));
 
             Category category = new Category();
-            category.setId(rs.getInt("category_id")); // Kun ID sættes – resten kan hentes senere hvis nødvendigt
+            category.setId(rs.getInt("category_id"));
             subCategory.setCategory(category);
 
             return subCategory;

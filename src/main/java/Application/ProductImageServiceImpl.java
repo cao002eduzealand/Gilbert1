@@ -39,8 +39,5 @@ public class ProductImageServiceImpl implements ServiceInterface<ProductImage> {
     public ProductImage findById(int id) {
         return repository.findById(id);
     }
-    
-    public List<ProductImage> findByProductId(int productId) {
-        return repository.findByProductId(productId);
-    }
+
 }

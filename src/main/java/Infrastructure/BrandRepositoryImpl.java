@@ -1,7 +1,6 @@
 package Infrastructure;
 
 import Domain.Brand;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -29,7 +28,7 @@ public class BrandRepositoryImpl implements CrudRepository<Brand> {
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             Brand brand = new Brand();
             brand.setId(rs.getInt("id"));
-            brand.setBrandName(rs.getString("name")); // Map 'name' column to brandName
+            brand.setBrandName(rs.getString("name"));
             return brand;
         });
     }
@@ -46,18 +45,14 @@ public class BrandRepositoryImpl implements CrudRepository<Brand> {
     jdbcTemplate.update(sql, id);
     }
 
-   /* @Override
-    public Brand findById(int id) {
-       String sql = "SELECT * FROM brand WHERE id = ?";
-       return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Brand.class), id);
-    }*/
+
     @Override
     public Brand findById(int id) {
         String sql = "SELECT * FROM brand WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
             Brand brand = new Brand();
             brand.setId(rs.getInt("id"));
-            brand.setBrandName(rs.getString("name")); // Map 'name' column to brandName
+            brand.setBrandName(rs.getString("name"));
             return brand;
         }, id);
     }

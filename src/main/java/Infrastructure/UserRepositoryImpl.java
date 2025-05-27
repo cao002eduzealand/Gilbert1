@@ -1,7 +1,7 @@
 package Infrastructure;
 
 import Domain.*;
-import org.springframework.dao.DataAccessException;
+
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;

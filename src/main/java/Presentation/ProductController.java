@@ -44,7 +44,7 @@ public class ProductController {
         this.productImageService = productImageService;
     }
 
-    @GetMapping("/product/edit/{id}")  // This should match your profile.html link
+    @GetMapping("/product/edit/{id}")
     public String showEditForm(@PathVariable("id") int productId, Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
@@ -54,7 +54,7 @@ public class ProductController {
         try {
             Product product = productService.findById(productId);
 
-            // Check if the product belongs to the logged-in user
+
             if (product.getSeller().getId() != user.getId()) {
                 return "redirect:/profile";
             }
@@ -101,14 +101,12 @@ public class ProductController {
                 return "redirect:/profile";
             }
 
-            // Handle different actions
+
             if ("delete".equals(action)) {
-                // Delete the product
                 productService.delete(productId);
                 session.setAttribute("successMessage", "Product has been successfully deleted.");
                 return "redirect:/profile";
             } else if ("markSold".equals(action)) {
-                // Find the "Sold" status and update the product
                 List<ProductStatus> statuses = statusService.findAll();
                 ProductStatus soldStatus = null;
                 for (ProductStatus status : statuses) {
@@ -127,7 +125,7 @@ public class ProductController {
                     model.addAttribute("errorMessage", "Could not find 'Sold' status in the database.");
                 }
             } else if ("update".equals(action)) {
-                // Update product information
+
                 product.setBrand(brandService.findById(brandId));
                 product.setClothingArticle(clothingArticleService.findById(clothingArticleId));
                 product.setCondition(conditionService.findById(conditionId));
@@ -135,10 +133,10 @@ public class ProductController {
                 product.setDescription(description);
                 product.setPrice(price);
 
-                // Update the product in database
+
                 productService.update(product);
 
-                // Handle image upload if provided
+
                 if (productImage != null && !productImage.isEmpty()) {
                     try {
                         // Create directory if it doesn't exist
@@ -186,7 +184,7 @@ public class ProductController {
                 return "redirect:/profile";
             }
 
-            // If we get here, reload the edit form with the product data
+
             model.addAttribute("brands", brandService.findAll());
             model.addAttribute("clothingArticles", clothingArticleService.findAll());
             model.addAttribute("conditions", conditionService.findAll());
@@ -207,12 +205,12 @@ public class ProductController {
         try {
             Product product = productService.findById(productId);
 
-            // Check if the product or seller is null
+
             if (product == null) {
                 return "redirect:/Gilbert";
             }
 
-            // Set isOwner flag based on whether the logged-in user is the seller
+
             boolean isOwner = false;
             if (user != null && product.getSeller() != null) {
                 isOwner = user.getId() == product.getSeller().getId();

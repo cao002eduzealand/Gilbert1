@@ -10,7 +10,7 @@ import java.util.Collections;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Repository
@@ -44,7 +44,7 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
             return ps;
         }, keyHolder);
 
-        // Get the generated ID and set it to the product
+
         product.setId(keyHolder.getKey().intValue());
 
         return product;
@@ -180,7 +180,7 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
                     ProductCondition condition = jdbcTemplate.queryForObject(conditionSql, (rs, rowNum) -> {
                         ProductCondition c = new ProductCondition();
                         c.setId(rs.getInt("id"));
-                        c.setCondition(rs.getString("name")); // Assuming column name is "name"
+                        c.setCondition(rs.getString("name"));
                         return c;
                     }, product.getCondition().getId());
                     product.setCondition(condition);
@@ -196,7 +196,7 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
                     ProductStatus status = jdbcTemplate.queryForObject(statusSql, (rs, rowNum) -> {
                         ProductStatus s = new ProductStatus();
                         s.setId(rs.getInt("id"));
-                        s.setStatus(rs.getString("name")); // Assuming column name is "name"
+                        s.setStatus(rs.getString("name"));
                         return s;
                     }, product.getProductStatus().getId());
                     product.setProductStatus(status);
@@ -236,17 +236,17 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
             product.setPrice(rs.getDouble("price"));
             product.setDateUploaded(rs.getTimestamp("date_uploaded"));
 
-            // Create the brand object with just the ID
+
             Brand brand = new Brand();
             brand.setId(rs.getInt("brand_id"));
             product.setBrand(brand);
 
-            // Create the clothing article object with just the ID
+
             ClothingArticle article = new ClothingArticle();
             article.setId(rs.getInt("clothing_article_id"));
             product.setClothingArticle(article);
 
-            // Create the condition object with just the ID
+
             ProductCondition condition = new ProductCondition();
             condition.setId(rs.getInt("condition_id"));
             product.setCondition(condition);
@@ -254,7 +254,7 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
             return product;
         }, user.getId());
 
-        // Now populate each product with complete related entities
+
         for (Product product : products) {
             try {
                 // Fetch brand
@@ -265,7 +265,7 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
                         Brand brand = jdbcTemplate.queryForObject(brandSql, (rs, rowNum) -> {
                             Brand b = new Brand();
                             b.setId(rs.getInt("id"));
-                            b.setBrandName(rs.getString("name")); // Make sure this matches your column name
+                            b.setBrandName(rs.getString("name"));
                             return b;
                         }, product.getBrand().getId());
                         product.setBrand(brand);
@@ -286,7 +286,7 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
                         ClothingArticle article = jdbcTemplate.queryForObject(articleSql, (rs, rowNum) -> {
                             ClothingArticle a = new ClothingArticle();
                             a.setId(rs.getInt("id"));
-                            a.setName(rs.getString("name")); // Make sure this matches your column name
+                            a.setName(rs.getString("name"));
                             return a;
                         }, product.getClothingArticle().getId());
                         product.setClothingArticle(article);
@@ -307,7 +307,7 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
                         ProductCondition condition = jdbcTemplate.queryForObject(conditionSql, (rs, rowNum) -> {
                             ProductCondition c = new ProductCondition();
                             c.setId(rs.getInt("id"));
-                            c.setCondition(rs.getString("name")); // Assuming column name is "name", not "condition"
+                            c.setCondition(rs.getString("name"));
                             return c;
                         }, product.getCondition().getId());
                         product.setCondition(condition);
@@ -367,7 +367,7 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
             return jdbcTemplate.queryForObject(sql, new Object[]{statusName}, Integer.class);
         } catch (Exception e) {
             System.out.println("Status not found for name: " + statusName);
-            return -1; // or throw an exception based on your error handling strategy
+            return -1;
         }
     }
     private Integer listedStatusId = null;

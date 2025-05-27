@@ -1,7 +1,7 @@
 package Application;
 
 
-import Domain.Role;
+
 import Domain.User;
 import Infrastructure.UserRepositoryImpl;
 import org.springframework.stereotype.Service;
@@ -49,13 +49,6 @@ public class UserServiceImpl implements ServiceInterface<User> {
     public void updateUserCompany(int userId, int companyId){
        repository.updateUserCompany(userId, companyId);
     }
-
-
-//    public void updateProfilePicture(int userId, String profilePictureURL) {
-//        userRepositoryImpl.updateProfilePicture(userId, profilePictureURL);
-//    }
-
-    //public List<Product> findAllByBrand(Brand brand){return repository.findAllByBrand(brand);}
 
 
     public String saveProfileImage(User user, MultipartFile image) throws IOException {

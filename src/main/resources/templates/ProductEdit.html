@@ -208,13 +208,13 @@
     <!-- Description -->
     <textarea name="description" rows="4" placeholder="Description..." th:text="${product.description}"></textarea>
 
-    <!-- Current Image (if exists) -->
+    <!-- Current Image -->
     <div class="current-image" th:if="${product.images != null && !#lists.isEmpty(product.images)}">
       <p>Current Image:</p>
       <img th:src="${product.images[0].imageUrl}" alt="Current product image" />
     </div>
 
-    <!-- Image Upload (optional) -->
+    <!-- Image Upload -->
     <div>
       <label for="productImage">Change image (optional):</label>
       <input type="file" id="productImage" name="productImage" accept="image/*" />

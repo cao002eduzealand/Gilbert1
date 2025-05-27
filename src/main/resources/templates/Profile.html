@@ -340,7 +340,7 @@
       padding: 5px;
       position: absolute;
       z-index: 1;
-      bottom: 125%; /* Show above the icon */
+      bottom: 125%;
       left: 50%;
       transform: translateX(-50%);
       opacity: 0;
@@ -465,12 +465,11 @@
 
 <!-- CONTENT -->
 <div class="profile-content">
-  <!-- Add this near the top of your profile content div -->
   <div th:if="${successMessage}" class="success-message" style="background-color: #e0f0e9; color: #004224; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
     <p th:text="${successMessage}">Success message</p>
   </div>
 
-  <!-- And for error messages -->
+  <!-- error messages -->
   <div th:if="${errorMessage}" class="error-message" style="background-color: #f0e0e0; color: #420000; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
     <p th:text="${errorMessage}">Error message</p>
   </div>

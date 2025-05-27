@@ -2,7 +2,7 @@ package Application;
 
 import Domain.Category;
 import Infrastructure.CategoryRepositoryimpl;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

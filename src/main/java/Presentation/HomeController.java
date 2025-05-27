@@ -2,13 +2,11 @@ package Presentation;
 
 import Application.*;
 import Domain.*;
-import Infrastructure.ClothingArticleRepositoryImpl;
+
 import Infrastructure.ProductRepositoryImpl;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Comparator;
@@ -97,8 +95,6 @@ public class HomeController {
     @GetMapping("/article/{clothingArticleId}")
     public String getProductsByClothingArticle(@PathVariable int clothingArticleId, Model model) {
         List<Product> products = productService.findAllByClothingArticleId(clothingArticleId);
-        // You would need to fetch the clothing article details here
-        // For demonstration, we'll use a placeholder
         productService.populateImagesForProducts(products);
         model.addAttribute("products", products);
         model.addAttribute("searchTitle", "Product Search");

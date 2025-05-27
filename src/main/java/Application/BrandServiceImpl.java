@@ -12,11 +12,10 @@ import java.util.stream.Collectors;
 public class BrandServiceImpl implements ServiceInterface<Brand> {
 
     private final BrandRepositoryImpl repository;
-    private final BrandRepositoryImpl brandRepositoryImpl;
+
 
     public BrandServiceImpl(BrandRepositoryImpl repository, BrandRepositoryImpl brandRepositoryImpl) {
         this.repository = repository;
-        this.brandRepositoryImpl = brandRepositoryImpl;
     }
 
     @Override
