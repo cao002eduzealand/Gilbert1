@@ -1,10 +1,21 @@
-package Presentation;
+package Test;
 
 import Domain.Brand;
+import Infrastructure.BrandRepositoryImpl;
+import Presentation.DemoApplication;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
+
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest(classes = DemoApplication.class)
+@Transactional
 class BrandTest {
+    @Autowired
+private JdbcTemplate jdbcTemplate;
 
     @Test
     void testBrandConstructor_ShouldCreateBrandWithCorrectValues() {
@@ -85,4 +96,17 @@ class BrandTest {
         assertEquals(brand1.getBrandName(), brand2.getBrandName());
         assertEquals(brand1.toString(), brand2.toString());
     }
+    @Test
+    void findById_ShouldReturnCorrectBrand() {
+        // Arrange
+        BrandRepositoryImpl brandRepository = new BrandRepositoryImpl(jdbcTemplate);
+
+        // Act
+        Brand result = brandRepository.findById(33);
+
+        // Assert
+        assertEquals(33, result.getId());
+        assertEquals("ADYAR", result.getBrandName());
+    }
+
 }

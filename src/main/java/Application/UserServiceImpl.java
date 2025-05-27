@@ -57,6 +57,7 @@ public class UserServiceImpl implements ServiceInterface<User> {
 
     //public List<Product> findAllByBrand(Brand brand){return repository.findAllByBrand(brand);}
 
+
     public String saveProfileImage(User user, MultipartFile image) throws IOException {
         // Ensure uploads folder exists
         if (Files.notExists(uploadPath)) {
