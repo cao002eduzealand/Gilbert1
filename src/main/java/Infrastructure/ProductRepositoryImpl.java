@@ -78,9 +78,15 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
 
     @Override
     public Product findById(int id) {
+        Product product = fetchBasicProductInfo(id);
+        populateProductDetails(product);
+        return product;
+    }
+
+    private Product fetchBasicProductInfo(int id) {
         String sql = "SELECT * FROM product WHERE id = ?";
 
-        Product product = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
             Product p = new Product();
             p.setId(rs.getInt("id"));
             p.setModelName(rs.getString("model_name"));
@@ -88,146 +94,163 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
             p.setPrice(rs.getDouble("price"));
             p.setDateUploaded(rs.getTimestamp("date_uploaded"));
 
-            // Get the seller ID
-            int sellerId = rs.getInt("seller_id");
-            if (sellerId > 0) {
-                User seller = new User();
-                seller.setId(sellerId);
-                p.setSeller(seller);
-            }
-
-            // Get other IDs
-            int brandId = rs.getInt("brand_id");
-            if (brandId > 0) {
-                Brand brand = new Brand();
-                brand.setId(brandId);
-                p.setBrand(brand);
-            }
-
-            int articleId = rs.getInt("clothing_article_id");
-            if (articleId > 0) {
-                ClothingArticle article = new ClothingArticle();
-                article.setId(articleId);
-                p.setClothingArticle(article);
-            }
-
-            int conditionId = rs.getInt("condition_id");
-            if (conditionId > 0) {
-                ProductCondition condition = new ProductCondition();
-                condition.setId(conditionId);
-                p.setCondition(condition);
-            }
-
-            int statusId = rs.getInt("status_id");
-            if (statusId > 0) {
-                ProductStatus status = new ProductStatus();
-                status.setId(statusId);
-                p.setProductStatus(status);
-            }
+            // Set placeholder objects with IDs
+            setSeller(p, rs.getInt("seller_id"));
+            setBrand(p, rs.getInt("brand_id"));
+            setClothingArticle(p, rs.getInt("clothing_article_id"));
+            setCondition(p, rs.getInt("condition_id"));
+            setStatus(p, rs.getInt("status_id"));
 
             return p;
         }, id);
+    }
 
-
-        try {
-            // Fetch seller
-            if (product.getSeller() != null) {
-                String sellerSql = "SELECT * FROM user WHERE id = ?";
-                try {
-                    User seller = jdbcTemplate.queryForObject(sellerSql, new BeanPropertyRowMapper<>(User.class), product.getSeller().getId());
-                    product.setSeller(seller);
-                } catch (Exception e) {
-                    System.out.println("Error fetching seller: " + e.getMessage());
-                }
-            }
-
-            // Fetch brand
-            if (product.getBrand() != null) {
-                String brandSql = "SELECT * FROM brand WHERE id = ?";
-                try {
-                    Brand brand = jdbcTemplate.queryForObject(brandSql, (rs, rowNum) -> {
-                        Brand b = new Brand();
-                        b.setId(rs.getInt("id"));
-                        b.setBrandName(rs.getString("name"));
-                        return b;
-                    }, product.getBrand().getId());
-                    product.setBrand(brand);
-                } catch (Exception e) {
-                    System.out.println("Error fetching brand: " + e.getMessage());
-                }
-            }
-
-            // Fetch clothing article
-            if (product.getClothingArticle() != null) {
-                String articleSql = "SELECT * FROM clothing_article WHERE id = ?";
-                try {
-                    ClothingArticle article = jdbcTemplate.queryForObject(articleSql, (rs, rowNum) -> {
-                        ClothingArticle a = new ClothingArticle();
-                        a.setId(rs.getInt("id"));
-                        a.setName(rs.getString("name"));
-                        return a;
-                    }, product.getClothingArticle().getId());
-                    product.setClothingArticle(article);
-                } catch (Exception e) {
-                    System.out.println("Error fetching clothing article: " + e.getMessage());
-                }
-            }
-
-            // Fetch condition
-            if (product.getCondition() != null) {
-                String conditionSql = "SELECT * FROM product_condition WHERE id = ?";
-                try {
-                    ProductCondition condition = jdbcTemplate.queryForObject(conditionSql, (rs, rowNum) -> {
-                        ProductCondition c = new ProductCondition();
-                        c.setId(rs.getInt("id"));
-                        c.setCondition(rs.getString("name"));
-                        return c;
-                    }, product.getCondition().getId());
-                    product.setCondition(condition);
-                } catch (Exception e) {
-                    System.out.println("Error fetching condition: " + e.getMessage());
-                }
-            }
-
-            // Fetch status
-            if (product.getProductStatus() != null) {
-                String statusSql = "SELECT * FROM product_status WHERE id = ?";
-                try {
-                    ProductStatus status = jdbcTemplate.queryForObject(statusSql, (rs, rowNum) -> {
-                        ProductStatus s = new ProductStatus();
-                        s.setId(rs.getInt("id"));
-                        s.setStatus(rs.getString("name"));
-                        return s;
-                    }, product.getProductStatus().getId());
-                    product.setProductStatus(status);
-                } catch (Exception e) {
-                    System.out.println("Error fetching status: " + e.getMessage());
-                }
-            }
-
-            // Fetch images
-            String imageSql = "SELECT * FROM product_image WHERE product_id = ?";
-            List<ProductImage> images = jdbcTemplate.query(imageSql, (rs, rowNum) -> {
-                ProductImage image = new ProductImage();
-                image.setId(rs.getInt("id"));
-                image.setImageUrl(rs.getString("image_url"));
-                image.setUploadedAt(rs.getTimestamp("uploaded_at"));
-                return image;
-            }, product.getId());
-
-            product.setImages(images);
-
-        } catch (Exception e) {
-            System.out.println("Error fetching product details: " + e.getMessage());
-            e.printStackTrace();
+    private void setSeller(Product product, int sellerId) {
+        if (sellerId > 0) {
+            User seller = new User();
+            seller.setId(sellerId);
+            product.setSeller(seller);
         }
+    }
 
-        return product;
+    private void setBrand(Product product, int brandId) {
+        if (brandId > 0) {
+            Brand brand = new Brand();
+            brand.setId(brandId);
+            product.setBrand(brand);
+        }
+    }
+
+    private void setClothingArticle(Product product, int articleId) {
+        if (articleId > 0) {
+            ClothingArticle article = new ClothingArticle();
+            article.setId(articleId);
+            product.setClothingArticle(article);
+        }
+    }
+
+    private void setCondition(Product product, int conditionId) {
+        if (conditionId > 0) {
+            ProductCondition condition = new ProductCondition();
+            condition.setId(conditionId);
+            product.setCondition(condition);
+        }
+    }
+
+    private void setStatus(Product product, int statusId) {
+        if (statusId > 0) {
+            ProductStatus status = new ProductStatus();
+            status.setId(statusId);
+            product.setProductStatus(status);
+        }
+    }
+
+    private void populateProductDetails(Product product) {
+        populateSellerDetails(product);
+        populateBrandDetails(product);
+        populateClothingArticleDetails(product);
+        populateConditionDetails(product);
+        populateStatusDetails(product);
+        populateProductImages(product);
+    }
+
+    private void populateSellerDetails(Product product) {
+        if (product.getSeller() != null) {
+            String sql = "SELECT * FROM user WHERE id = ?";
+            try {
+                User seller = jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(User.class), product.getSeller().getId());
+                product.setSeller(seller);
+            } catch (Exception e) {
+                // Handle error silently
+            }
+        }
+    }
+
+    private void populateBrandDetails(Product product) {
+        if (product.getBrand() != null) {
+            String sql = "SELECT * FROM brand WHERE id = ?";
+            try {
+                Brand brand = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+                    Brand b = new Brand();
+                    b.setId(rs.getInt("id"));
+                    b.setBrandName(rs.getString("name"));
+                    return b;
+                }, product.getBrand().getId());
+                product.setBrand(brand);
+            } catch (Exception e) {
+                // Handle error silently
+            }
+        }
+    }
+
+    private void populateClothingArticleDetails(Product product) {
+        if (product.getClothingArticle() != null) {
+            String sql = "SELECT * FROM clothing_article WHERE id = ?";
+            try {
+                ClothingArticle article = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+                    ClothingArticle a = new ClothingArticle();
+                    a.setId(rs.getInt("id"));
+                    a.setName(rs.getString("name"));
+                    return a;
+                }, product.getClothingArticle().getId());
+                product.setClothingArticle(article);
+            } catch (Exception e) {
+                // Handle error silently
+            }
+        }
+    }
+
+    private void populateConditionDetails(Product product) {
+        if (product.getCondition() != null) {
+            String sql = "SELECT * FROM product_condition WHERE id = ?";
+            try {
+                ProductCondition condition = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+                    ProductCondition c = new ProductCondition();
+                    c.setId(rs.getInt("id"));
+                    c.setCondition(rs.getString("name"));
+                    return c;
+                }, product.getCondition().getId());
+                product.setCondition(condition);
+            } catch (Exception e) {
+                // Handle error silently
+            }
+        }
+    }
+
+    private void populateStatusDetails(Product product) {
+        if (product.getProductStatus() != null) {
+            String sql = "SELECT * FROM product_status WHERE id = ?";
+            try {
+                ProductStatus status = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+                    ProductStatus s = new ProductStatus();
+                    s.setId(rs.getInt("id"));
+                    s.setStatus(rs.getString("name"));
+                    return s;
+                }, product.getProductStatus().getId());
+                product.setProductStatus(status);
+            } catch (Exception e) {
+                // Handle error silently
+            }
+        }
+    }
+
+    private void populateProductImages(Product product) {
+        String sql = "SELECT * FROM product_image WHERE product_id = ?";
+        List<ProductImage> images = jdbcTemplate.query(sql, (rs, rowNum) -> {
+            ProductImage image = new ProductImage();
+            image.setId(rs.getInt("id"));
+            image.setImageUrl(rs.getString("image_url"));
+            image.setUploadedAt(rs.getTimestamp("uploaded_at"));
+            return image;
+        }, product.getId());
+
+        product.setImages(images);
     }
 
     public List<Product> getProductsByUser(User user) {
-        // Fetch basic product information
-        String sql = "SELECT * FROM product WHERE seller_id = ?";
+        // Fetch basic product information with all related data in one query
+        String sql = "SELECT FROM product WHERE seller_id = ?";
+
         List<Product> products = jdbcTemplate.query(sql, (rs, rowNum) -> {
             Product product = new Product();
             product.setId(rs.getInt("id"));
@@ -236,113 +259,20 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
             product.setPrice(rs.getDouble("price"));
             product.setDateUploaded(rs.getTimestamp("date_uploaded"));
 
-
-            Brand brand = new Brand();
-            brand.setId(rs.getInt("brand_id"));
-            product.setBrand(brand);
-
-
-            ClothingArticle article = new ClothingArticle();
-            article.setId(rs.getInt("clothing_article_id"));
-            product.setClothingArticle(article);
-
-
-            ProductCondition condition = new ProductCondition();
-            condition.setId(rs.getInt("condition_id"));
-            product.setCondition(condition);
+            setBrand(product, rs.getInt("brand_id"));
+            setClothingArticle(product, rs.getInt("clothing_article_id"));
+            setCondition(product, rs.getInt("condition_id"));
 
             return product;
         }, user.getId());
 
-
         for (Product product : products) {
-            try {
-                // Fetch brand
-                if (product.getBrand() != null && product.getBrand().getId() > 0) {
-                    String brandSql = "SELECT * FROM brand WHERE id = ?";
-                    try {
-                        // Use row mapper with specific column handling
-                        Brand brand = jdbcTemplate.queryForObject(brandSql, (rs, rowNum) -> {
-                            Brand b = new Brand();
-                            b.setId(rs.getInt("id"));
-                            b.setBrandName(rs.getString("name"));
-                            return b;
-                        }, product.getBrand().getId());
-                        product.setBrand(brand);
-                        System.out.println("Fetched brand: " + brand.getId() + " - " + brand.getBrandName());
-                    } catch (Exception e) {
-                        System.out.println("Error fetching brand: " + e.getMessage());
-                        product.setBrand(new Brand(0, "Unknown"));
-                    }
-                } else {
-                    product.setBrand(new Brand(0, "Unknown"));
-                }
+            populateBrandDetails(product);
+            populateClothingArticleDetails(product);
+            populateConditionDetails(product);
+            populateProductImages(product);
 
-                // Fetch clothing article
-                if (product.getClothingArticle() != null && product.getClothingArticle().getId() > 0) {
-                    String articleSql = "SELECT * FROM clothing_article WHERE id = ?";
-                    try {
-                        // Use row mapper with specific column handling
-                        ClothingArticle article = jdbcTemplate.queryForObject(articleSql, (rs, rowNum) -> {
-                            ClothingArticle a = new ClothingArticle();
-                            a.setId(rs.getInt("id"));
-                            a.setName(rs.getString("name"));
-                            return a;
-                        }, product.getClothingArticle().getId());
-                        product.setClothingArticle(article);
-                        System.out.println("Fetched article: " + article.getId() + " - " + article.getName());
-                    } catch (Exception e) {
-                        System.out.println("Error fetching clothing article: " + e.getMessage());
-                        product.setClothingArticle(new ClothingArticle(0, "Unknown", null));
-                    }
-                } else {
-                    product.setClothingArticle(new ClothingArticle(0, "Unknown", null));
-                }
-
-                // Fetch condition
-                if (product.getCondition() != null && product.getCondition().getId() > 0) {
-                    String conditionSql = "SELECT * FROM product_condition WHERE id = ?";
-                    try {
-                        // Use row mapper with specific column handling
-                        ProductCondition condition = jdbcTemplate.queryForObject(conditionSql, (rs, rowNum) -> {
-                            ProductCondition c = new ProductCondition();
-                            c.setId(rs.getInt("id"));
-                            c.setCondition(rs.getString("name"));
-                            return c;
-                        }, product.getCondition().getId());
-                        product.setCondition(condition);
-                        System.out.println("Fetched condition: " + condition.getId() + " - " + condition.getCondition());
-                    } catch (Exception e) {
-                        System.out.println("Error fetching condition: " + e.getMessage());
-                        product.setCondition(new ProductCondition(0, "Unknown"));
-                    }
-                } else {
-                    product.setCondition(new ProductCondition(0, "Unknown"));
-                }
-
-                // Fetch images
-                String imageSql = "SELECT * FROM product_image WHERE product_id = ?";
-                List<ProductImage> images = jdbcTemplate.query(imageSql, (rs, rowNum) -> {
-                    ProductImage image = new ProductImage();
-                    image.setId(rs.getInt("id"));
-                    image.setImageUrl(rs.getString("image_url"));
-                    image.setUploadedAt(rs.getTimestamp("uploaded_at"));
-                    return image;
-                }, product.getId());
-
-                System.out.println("Product " + product.getId() + " has " + images.size() + " images");
-                for (ProductImage image : images) {
-                    System.out.println("  Image URL: " + image.getImageUrl());
-                }
-
-                product.setImages(images);
-
-            } catch (Exception e) {
-                System.out.println("Error processing product " + product.getId() + ": " + e.getMessage());
-                e.printStackTrace();
-            }
         }
-
         return products;
     }
 

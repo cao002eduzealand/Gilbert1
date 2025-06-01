@@ -24,11 +24,9 @@ public class ProfileController {
 
     private final UserServiceImpl userService;
     private final ProductServiceImpl productService;
-    private final CompanyServiceImpl companyService;
-    public ProfileController(UserServiceImpl userService, ProductServiceImpl productService, CompanyServiceImpl companyService) {
+    public ProfileController(UserServiceImpl userService, ProductServiceImpl productService) {
         this.userService = userService;
         this.productService = productService;
-        this.companyService = companyService;
     }
 
     @GetMapping("/profile")
@@ -127,7 +125,7 @@ public class ProfileController {
     if (user==null){
         return "redirect:/login";
     }
-    Company savedCompany = companyService.save(company);
+    Company savedCompany = userService.saveCompany(company);
 
     userService.updateUserCompany(user.getId(), savedCompany.getId());
     user.setCompany(savedCompany);

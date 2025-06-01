@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController {
 
     private final UserServiceImpl userService;
-    private final CompanyServiceImpl companyService;
-    public LoginController(UserServiceImpl userService, CompanyServiceImpl companyService) {
+    public LoginController(UserServiceImpl userService) {
         this.userService = userService;
-        this.companyService = companyService;
     }
 
 
@@ -29,8 +27,8 @@ public class LoginController {
 
         try {
             User user = userService.authenticeUser(username, password);
-           Company company = companyService.findCompanyByUser(user.getId());
-           user.setCompany(company);
+            Company company = userService.findCompanyByUser(user.getId());
+            user.setCompany(company);
 
             session.setAttribute("user", user);
             return "redirect:/Gilbert";

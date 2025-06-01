@@ -25,23 +25,14 @@ public class ProductController {
     private final ProductServiceImpl productService;
     private final BrandServiceImpl brandService;
     private final ClothingArticleServiceImpl clothingArticleService;
-    private final ProductConditionServiceImpl conditionService;
-    private final ProductStatusServiceImpl statusService;
-    private final ProductImageServiceImpl productImageService;
 
     @Autowired
     public ProductController(ProductServiceImpl productService,
                              BrandServiceImpl brandService,
-                             ClothingArticleServiceImpl clothingArticleService,
-                             ProductConditionServiceImpl conditionService,
-                             ProductStatusServiceImpl statusService,
-                             ProductImageServiceImpl productImageService) {
+                             ClothingArticleServiceImpl clothingArticleService) {
         this.productService = productService;
         this.brandService = brandService;
         this.clothingArticleService = clothingArticleService;
-        this.conditionService = conditionService;
-        this.statusService = statusService;
-        this.productImageService = productImageService;
     }
 
     @GetMapping("/product/edit/{id}")
@@ -62,8 +53,8 @@ public class ProductController {
             // Load data for dropdowns
             model.addAttribute("brands", brandService.findAll());
             model.addAttribute("clothingArticles", clothingArticleService.findAll());
-            model.addAttribute("conditions", conditionService.findAll());
-            model.addAttribute("statuses", statusService.findAll());
+            model.addAttribute("conditions", productService.findAllProductCondition());
+            model.addAttribute("statuses", productService.findAllProductStatus());
 
             model.addAttribute("product", product);
             return "ProductEdit";
@@ -107,7 +98,7 @@ public class ProductController {
                 session.setAttribute("successMessage", "Product has been successfully deleted.");
                 return "redirect:/profile";
             } else if ("markSold".equals(action)) {
-                List<ProductStatus> statuses = statusService.findAll();
+                List<ProductStatus> statuses = productService.findAllProductStatus();
                 ProductStatus soldStatus = null;
                 for (ProductStatus status : statuses) {
                     if (status.getStatus().toLowerCase().contains("sold")) {
@@ -128,7 +119,7 @@ public class ProductController {
 
                 product.setBrand(brandService.findById(brandId));
                 product.setClothingArticle(clothingArticleService.findById(clothingArticleId));
-                product.setCondition(conditionService.findById(conditionId));
+                product.setCondition(productService.findProductConditionById(conditionId));
                 product.setModelName(modelName);
                 product.setDescription(description);
                 product.setPrice(price);
@@ -166,14 +157,14 @@ public class ProductController {
                             ProductImage existingImage = product.getImages().get(0);
                             existingImage.setImageUrl(imageUrl);
                             existingImage.setUploadedAt(new Timestamp(System.currentTimeMillis()));
-                            productImageService.update(existingImage);
+                            productService.updateProductImage(existingImage);
                         } else {
                             // Create and save new product image
                             ProductImage productImageObj = new ProductImage();
                             productImageObj.setProduct(product);
                             productImageObj.setImageUrl(imageUrl);
                             productImageObj.setUploadedAt(new Timestamp(System.currentTimeMillis()));
-                            productImageService.save(productImageObj);
+                            productService.saveProductImage(productImageObj);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -187,7 +178,7 @@ public class ProductController {
 
             model.addAttribute("brands", brandService.findAll());
             model.addAttribute("clothingArticles", clothingArticleService.findAll());
-            model.addAttribute("conditions", conditionService.findAll());
+            model.addAttribute("conditions", productService.findAllProductCondition());
             model.addAttribute("product", product);
             return "ProductEdit";
 

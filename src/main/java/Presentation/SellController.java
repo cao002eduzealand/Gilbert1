@@ -26,29 +26,15 @@ public class SellController {
     private final ProductServiceImpl productService;
     private final BrandServiceImpl brandService;
     private final ClothingArticleServiceImpl clothingArticleService;
-    private final ProductConditionServiceImpl conditionService;
-    private final ProductStatusServiceImpl statusService;
-    private final ProductImageServiceImpl productImageService;
-    private final CategoryServiceImpl categoryService;
-    private final SubCategoryServiceImpl subCategoryService;
+
 
     @Autowired
     public SellController(ProductServiceImpl productService,
                           BrandServiceImpl brandService,
-                          ClothingArticleServiceImpl clothingArticleService,
-                          ProductConditionServiceImpl conditionService,
-                          ProductStatusServiceImpl statusService,
-                          ProductImageServiceImpl productImageService,
-                          CategoryServiceImpl categoryService,
-                          SubCategoryServiceImpl subCategoryService) {
+                          ClothingArticleServiceImpl clothingArticleService) {
         this.productService = productService;
         this.brandService = brandService;
         this.clothingArticleService = clothingArticleService;
-        this.conditionService = conditionService;
-        this.statusService = statusService;
-        this.productImageService = productImageService;
-        this.categoryService = categoryService;
-        this.subCategoryService = subCategoryService;
     }
 
     @GetMapping("/Sell")
@@ -62,13 +48,13 @@ public class SellController {
         model.addAttribute("brands", brandService.findAll());
 
         // Get all categories and filter out "Designer's" category
-        List<Category> allCategories = categoryService.findAll();
+        List<Category> allCategories = clothingArticleService.findAllCategories();
         List<Category> filteredCategories = allCategories.stream()
                 .filter(category -> !category.getName().equalsIgnoreCase("Designer's"))
                 .collect(Collectors.toList());
 
         model.addAttribute("categories", filteredCategories);
-        model.addAttribute("conditions", conditionService.findAll());
+        model.addAttribute("conditions", productService.findAllProductCondition());
 
         model.addAttribute("user", user);
         return "Sell";
@@ -78,7 +64,7 @@ public class SellController {
     @GetMapping("/api/subcategories/{categoryId}")
     @ResponseBody
     public List<SubCategory> getSubcategories(@PathVariable int categoryId) {
-        return subCategoryService.findByCategoryId(categoryId);
+        return clothingArticleService.findSubcategoryByCategoryId(categoryId);
     }
 
     @GetMapping("/api/clothingArticles/{subcategoryId}")
@@ -111,8 +97,8 @@ public class SellController {
 
                 // Load data for dropdowns
                 model.addAttribute("brands", brandService.findAll());
-                model.addAttribute("categories", categoryService.findAll());
-                model.addAttribute("conditions", conditionService.findAll());
+                model.addAttribute("categories", clothingArticleService.findAllCategories());
+                model.addAttribute("conditions", productService.findAllProductCondition());
 
                 return "Sell";
             }
@@ -121,7 +107,7 @@ public class SellController {
             Product product = new Product();
             product.setBrand(brandService.findById(brandId));
             product.setClothingArticle(clothingArticle);
-            product.setCondition(conditionService.findById(conditionId));
+            product.setCondition(productService.findProductConditionById(conditionId));
             product.setModelName(modelName);
             product.setDescription(description);
             product.setPrice(price);
@@ -169,7 +155,7 @@ public class SellController {
                     productImageObj.setUploadedAt(new Timestamp(System.currentTimeMillis()));
 
                     // Save the product image
-                    ProductImage savedImage = productImageService.save(productImageObj);
+                    ProductImage savedImage = productService.saveProductImage(productImageObj);
                     System.out.println("Saved product image with ID: " + savedImage.getId() + ", URL: " + savedImage.getImageUrl());
 
                 } catch (Exception e) {
@@ -197,7 +183,7 @@ public class SellController {
             // Return to the sell form
             model.addAttribute("brands", brandService.findAll());
             model.addAttribute("clothingArticles", clothingArticleService.findAll());
-            model.addAttribute("conditions", conditionService.findAll());
+            model.addAttribute("conditions", productService.findAllProductCondition());
 
             return "Sell";
         }

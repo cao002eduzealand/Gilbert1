@@ -18,26 +18,20 @@ import java.util.Map;
 public class HomeController {
 
 
-    private final CategoryServiceImpl categoryService;
-    private final SubCategoryServiceImpl subCategoryService;
     private final ClothingArticleServiceImpl clothingArticleService;
     private final ProductServiceImpl productService;
-    private final ProductRepositoryImpl productRepositoryImpl;
 
-    public HomeController(CategoryServiceImpl categoryService, SubCategoryServiceImpl subCategoryService,
-                          ClothingArticleServiceImpl clothingArticleService, ProductServiceImpl productService, ProductRepositoryImpl productRepositoryImpl) {
-        this.categoryService = categoryService;
-        this.subCategoryService = subCategoryService;
+
+    public HomeController(ClothingArticleServiceImpl clothingArticleService, ProductServiceImpl productService) {
         this.clothingArticleService = clothingArticleService;
         this.productService = productService;
-        this.productRepositoryImpl = productRepositoryImpl;
     }
 
     @RequestMapping("/Gilbert")
 
     @GetMapping("/home")
     public String showHomePage(Model model) {
-        List<Category> categories = categoryService.findAll();
+        List<Category> categories = clothingArticleService.findAllCategories();
 
 
         List<String> desiredOrder = List.of("Designer's", "Men's", "Women's", "Home", "Beauty");
@@ -48,7 +42,7 @@ public class HomeController {
         Map<Category, Map<SubCategory, List<ClothingArticle>>> categoryTree = new LinkedHashMap<>();
 
         for (Category category : categories) {
-            List<SubCategory> subCategories = subCategoryService.findByCategoryId(category.getId());
+            List<SubCategory> subCategories = clothingArticleService.findSubcategoryByCategoryId(category.getId());
             Map<SubCategory, List<ClothingArticle>> subMap = new LinkedHashMap<>();
 
             for (SubCategory sub : subCategories) {
@@ -67,7 +61,7 @@ public class HomeController {
     public String getProductsByCategory(@PathVariable int categoryId, Model model) {
         List<Product> products = productService.findAllByCategoryId(categoryId);
         productService.populateImagesForProducts(products);
-        Category category = categoryService.findById(categoryId);
+        Category category = clothingArticleService.findCategoryById(categoryId);
 
         model.addAttribute("products", products);
         model.addAttribute("searchTitle", category.getName() + "products");
@@ -80,8 +74,8 @@ public class HomeController {
     @GetMapping("/subcategory/{subCategoryId}")
     public String getProductsBysubcategory(@PathVariable int subCategoryId, Model model) {
         List<Product> products = productService.findAllBySubCategoryId(subCategoryId);
-        SubCategory subCategory = subCategoryService.findById(subCategoryId);
-        Category category = categoryService.findById(subCategory.getCategory().getId());
+        SubCategory subCategory = clothingArticleService.findSubCategoryById(subCategoryId);
+        Category category = clothingArticleService.findCategoryById(subCategory.getCategory().getId());
         productService.populateImagesForProducts(products);
 
         model.addAttribute("products", products);
@@ -105,7 +99,7 @@ public class HomeController {
     }
     @GetMapping("/search")
     public String searchProducts(@RequestParam(required = false) String query, Model model) {
-        List<Product> products = productRepositoryImpl.searchProducts(query);
+        List<Product> products = productService.searchProducts(query);
         productService.populateImagesForProducts(products);
 
         model.addAttribute("products", products);
