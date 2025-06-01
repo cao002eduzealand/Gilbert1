@@ -1,10 +1,10 @@
 package Application;
 
 
-import Domain.User;
+import Domain.*;
 import Infrastructure.ProductRepositoryImpl;
 import org.springframework.stereotype.Service;
-import Domain.Product;
+
 import java.util.List;
 
 @Service
@@ -34,6 +34,9 @@ public class ProductServiceImpl implements ServiceInterface<Product> {
 
     public List<Product> getProductsByUser(User user){return repository.getProductsByUser(user);}
 
+    public List<Product> findAllByBrand(Brand brand){return repository.findAllByBrand(brand);}
+    public int getStatusIdByName(String statusName){return repository.getStatusIdByName(statusName);}
+
 
     public List<Product> findAllByCategoryId(int categoryId){
         return repository.findAllByCategoryId(categoryId);
@@ -48,6 +51,32 @@ public class ProductServiceImpl implements ServiceInterface<Product> {
     public void populateImagesForProducts(List<Product> products){
        repository.populateImagesForProducts(products);
     }
+
+    public List<Product> searchProducts(String query){return repository.searchProducts(query);}
+
+    public ProductCondition findProductConditionById(int id){return repository.findProductConditionById(id);}
+
+    public List<ProductCondition> findAllProductCondition(){return repository.findAllProductCondition();}
+
+    //ProductImage
+    public ProductImage saveProductImage(ProductImage productImage){return repository.saveProductImage(productImage);}
+
+    public void updateProductImage(ProductImage productImage){repository.updateProductImage(productImage);}
+    public void deleteProductImage(int id){repository.deleteProductImage(id);}
+    public ProductImage findProductImageById(int id){return repository.findProductImageById(id);}
+
+    //ProductStatus
+
+    public ProductStatus findProductStatusById(int id){return repository.findProductStatusById(id);}
+    public List<ProductStatus> findAllProductStatus(){return repository.findAllProductStatus();}
+
+
+
+
+
+
+
+
 }
 
 

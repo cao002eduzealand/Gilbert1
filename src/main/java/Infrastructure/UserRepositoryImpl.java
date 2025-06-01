@@ -5,6 +5,8 @@ import Domain.*;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
 
@@ -187,6 +189,60 @@ public class UserRepositoryImpl implements CrudRepository<User> {
         jdbcTemplate.update(sql, companyId, userId);
     }
 
+    // Company
+
+    public Company findCompanyByUser(int userId) {
+        String sql = """
+        SELECT c.id, c.company_name, c.VAT_number
+        FROM company c
+        JOIN user u ON u.company_id = c.id
+        WHERE u.id = ?
+    """;
+
+        try {
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+                Company company = new Company();
+                company.setId(rs.getInt("id"));
+                company.setCompanyName(rs.getString("company_name"));
+                company.setCompanyCVRNumber(rs.getString("VAT_number"));
+                return company;
+            }, userId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    public Company saveCompany(Company company){
+        String sql = "INSERT INTO company(company_name, VAT_number) VALUES(?,?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection ->{
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
+            preparedStatement.setString(1, company.getCompanyName());
+            preparedStatement.setString(2, company.getCompanyCVRNumber());
+            return preparedStatement;
+        }, keyHolder);
+        if (keyHolder.getKey()!=null){
+            company.setId(keyHolder.getKey().intValue());
+
+        }
+        return company;
+    }
+
+    public List<Company> findAllCompanies(){
+        String sql = "SELECT * from company";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Company.class));
+    }
+
+    public void updateCompany(Company company){
+        String sql = "UPDATE company SET company_name=?, VAT_number=? WHERE id=?";
+        jdbcTemplate.update(sql, company.getCompanyName(), company.getCompanyCVRNumber(), company.getId());
+    }
+
+    public void deleteCompany(int id){
+        String sql="DELETE FROM company where id=?";
+        jdbcTemplate.update(sql, id);
+    }
 
 
 

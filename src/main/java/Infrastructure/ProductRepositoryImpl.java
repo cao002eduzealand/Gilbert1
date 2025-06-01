@@ -355,11 +355,6 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
 
     }
 
-    public List<ProductCondition> findAllProductConditions(){
-        String sql = "SELECT * FROM product_condition";
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ProductCondition.class));
-    }
-
     // Searching for categorytree dropdowns
     public int getStatusIdByName(String statusName) {
         String sql = "SELECT id FROM product_status WHERE name = ?";
@@ -694,6 +689,94 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
             product.setClothingArticle(article);
 
             return product;
+        });
+    }
+
+
+    //ProductCondition
+
+    public ProductCondition findProductConditionById(int id) {
+        String sql = "SELECT * FROM product_condition WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+            ProductCondition condition = new ProductCondition();
+            condition.setId(rs.getInt("id"));
+            condition.setCondition(rs.getString("name"));
+            return condition;
+        }, id);
+    }
+    public List<ProductCondition> findAllProductCondition() {
+        String sql = "SELECT * FROM product_condition";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            ProductCondition condition = new ProductCondition();
+            condition.setId(rs.getInt("id"));
+            condition.setCondition(rs.getString("name"));
+            return condition;
+        });
+    }
+
+
+    //ProductImage
+    public ProductImage saveProductImage(ProductImage productImage) {
+        String sql = "INSERT INTO product_image (product_id, image_url, uploaded_at) VALUES (?, ?, ?)";
+
+        System.out.println("Saving product image with product ID: " + productImage.getProduct().getId());
+
+        jdbcTemplate.update(sql,
+                productImage.getProduct().getId(),
+                productImage.getImageUrl(),
+                productImage.getUploadedAt());
+
+        return productImage;
+    }
+
+
+    public void updateProductImage(ProductImage productImage) {
+        String sql = "UPDATE product_image SET image_url = ?, uploaded_at = ? WHERE id = ?";
+        jdbcTemplate.update(sql,
+                productImage.getImageUrl(),
+                productImage.getUploadedAt(),
+                productImage.getId());
+    }
+
+
+    public void deleteProductImage(int id) {
+        String deleteImagesSql = "DELETE FROM product_image WHERE product_id = ?";
+        jdbcTemplate.update(deleteImagesSql, id);
+
+        String deleteProductSql = "DELETE FROM product WHERE id = ?";
+        jdbcTemplate.update(deleteProductSql, id);
+    }
+
+
+    public ProductImage findProductImageById(int id) {
+        String sql = "SELECT * FROM product_image WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+            ProductImage productImage = new ProductImage();
+            productImage.setId(rs.getInt("id"));
+            productImage.setImageUrl(rs.getString("image_url"));
+            productImage.setUploadedAt(rs.getTimestamp("uploaded_at"));
+            return productImage;
+        }, id);
+    }
+
+    //ProductStatus
+
+    public ProductStatus findProductStatusById(int id) {
+        String sql = "SELECT * FROM product_status WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+            ProductStatus status = new ProductStatus();
+            status.setId(rs.getInt("id"));
+            status.setStatus(rs.getString("name"));
+            return status;
+        }, id);
+    }
+    public List<ProductStatus> findAllProductStatus() {
+        String sql = "SELECT * FROM product_status";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            ProductStatus status = new ProductStatus();
+            status.setId(rs.getInt("id"));
+            status.setStatus(rs.getString("name"));
+            return status;
         });
     }
 

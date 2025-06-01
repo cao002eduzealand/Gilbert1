@@ -2,6 +2,7 @@ package Application;
 
 
 
+import Domain.Company;
 import Domain.User;
 import Infrastructure.UserRepositoryImpl;
 import org.springframework.stereotype.Service;
@@ -76,4 +77,21 @@ public class UserServiceImpl implements ServiceInterface<User> {
 
         return imageUrl;
     }
+
+    public Company findCompanyByUser(int userId){
+       return repository.findCompanyByUser(userId);
+    }
+
+    public Company saveCompany(Company company){
+       return repository.saveCompany(company);}
+
+    public List<Company> findAllCompanies(){
+       return repository.findAllCompanies();
+    }
+
+    public void updateCompany(Company company){
+       repository.updateCompany(company);}
+
+    public void deleteCompany(int id){repository.deleteCompany(id);}
+
 }

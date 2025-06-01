@@ -3,6 +3,7 @@ package Infrastructure;
 import Domain.Category;
 import Domain.ClothingArticle;
 import Domain.SubCategory;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -123,6 +124,64 @@ public class ClothingArticleRepositoryImpl implements CrudRepository<ClothingArt
             article.setSubcategory(subcategory);
 
             return article;
+        }, id);
+    }
+
+    //Category
+
+    public List<Category> findAllCategories() {
+        String sql = "select * from category";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Category.class));
+    }
+    public Category findCategoryById(int id) {
+        String sql = "select * from category where id=?";
+        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Category.class), id);
+    }
+
+    //Subcategory
+
+    public List<SubCategory> findAllSubcategories() {
+        String sql = "SELECT * FROM subcategory";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            SubCategory subCategory = new SubCategory();
+            subCategory.setId(rs.getInt("id"));
+            subCategory.setName(rs.getString("name"));
+
+            Category category = new Category();
+            category.setId(rs.getInt("category_id"));
+            subCategory.setCategory(category);
+
+            return subCategory;
+        });
+    }
+    public SubCategory findSubcategoryById(int id) {
+        String sql = "SELECT * FROM subcategory WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+            SubCategory subCategory = new SubCategory();
+            subCategory.setId(rs.getInt("id"));
+            subCategory.setName(rs.getString("name"));
+
+            Category category = new Category();
+            category.setId(rs.getInt("category_id"));
+            subCategory.setCategory(category);
+
+            return subCategory;
+        }, id);
+    }
+
+
+    public List<SubCategory> findSubcategoryByCategoryId(int id) {
+        String sql = "SELECT * FROM subcategory WHERE category_id = ?";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            SubCategory subCategory = new SubCategory();
+            subCategory.setId(rs.getInt("id"));
+            subCategory.setName(rs.getString("name"));
+
+            Category category = new Category();
+            category.setId(rs.getInt("category_id"));
+            subCategory.setCategory(category);
+
+            return subCategory;
         }, id);
     }
 
