@@ -44,23 +44,11 @@ public class SellController {
             return "redirect:/login";
         }
 
-        // Load data for dropdowns
-        model.addAttribute("brands", brandService.findAll());
-
-        // Get all categories and filter out "Designer's" category
-        List<Category> allCategories = clothingArticleService.findAllCategories();
-        List<Category> filteredCategories = allCategories.stream()
-                .filter(category -> !category.getName().equalsIgnoreCase("Designer's"))
-                .collect(Collectors.toList());
-
-        model.addAttribute("categories", filteredCategories);
-        model.addAttribute("conditions", productService.findAllProductCondition());
-
-        model.addAttribute("user", user);
+        populateSellForm(model, user);
         return "Sell";
     }
 
-    // Add REST endpoints to get subcategories and clothing articles
+
     @GetMapping("/api/subcategories/{categoryId}")
     @ResponseBody
     public List<SubCategory> getSubcategories(@PathVariable int categoryId) {
@@ -85,7 +73,7 @@ public class SellController {
                                     @RequestParam(value = "productImage", required = false) MultipartFile productImage) {
 
         User user = (User) session.getAttribute("user");
-        if (user == null){
+        if (user == null) {
             return "redirect:/login";
         }
 
@@ -93,99 +81,100 @@ public class SellController {
             // Verify that clothing article belongs to selected subcategory
             ClothingArticle clothingArticle = clothingArticleService.findById(clothingArticleId);
             if (clothingArticle.getSubcategory().getId() != subcategoryId) {
-                model.addAttribute("error", "Invalid clothing article selection");
-
-                // Load data for dropdowns
-                model.addAttribute("brands", brandService.findAll());
-                model.addAttribute("categories", clothingArticleService.findAllCategories());
-                model.addAttribute("conditions", productService.findAllProductCondition());
-
-                return "Sell";
+                return handleError(model, "Invalid clothing article selection");
             }
 
-            // Create a new product
+            // Create and save product
+            Product product = createProduct(user, brandId, clothingArticleId, conditionId, modelName, description, price);
+            Product savedProduct = productService.save(product);
+
+            // Handle image upload if provided
+            if (productImage != null && !productImage.isEmpty()) {
+                handleImageUpload(savedProduct, productImage);
+            }
+
+            session.setAttribute("successMessage", "Your product has been successfully submitted for review! An employee has to approve the listing before it goes on the store");
+            session.setAttribute("refreshProducts", true);
+            return "redirect:/profile";
+
+        } catch (ProductOperationException e) {
+            return handleError(model, e.getMessage());
+        } catch (ImageUploadException e) {
+            return handleError(model, "Failed to upload image: " + e.getMessage());
+        } catch (Exception e) {
+            return handleError(model, "An unexpected error occurred while creating your listing");
+        }
+    }
+    private Product createProduct(User user, int brandId, int clothingArticleId, int conditionId,
+                                  String modelName, String description, double price) {
+        try {
             Product product = new Product();
             product.setBrand(brandService.findById(brandId));
-            product.setClothingArticle(clothingArticle);
+            product.setClothingArticle(clothingArticleService.findById(clothingArticleId));
             product.setCondition(productService.findProductConditionById(conditionId));
             product.setModelName(modelName);
             product.setDescription(description);
             product.setPrice(price);
             product.setSeller(user);
             product.setDateUploaded(new Timestamp(System.currentTimeMillis()));
-
-            // Save the product
-            Product savedProduct = productService.save(product);
-            System.out.println("Saved product with ID: " + savedProduct.getId());
-
-            // Handle image upload if provided
-            if (productImage != null && !productImage.isEmpty()) {
-                try {
-                    System.out.println("Processing image: " + productImage.getOriginalFilename() + ", size: " + productImage.getSize());
-
-                    // Create directory if it doesn't exist
-                    Path uploadPath = Paths.get("src/main/resources/static/uploads/products");
-                    if (Files.notExists(uploadPath)) {
-                        Files.createDirectories(uploadPath);
-                    }
-                    System.out.println("Upload path: " + uploadPath.toAbsolutePath());
-
-                    // Generate unique filename
-                    String originalFilename = StringUtils.cleanPath(productImage.getOriginalFilename());
-                    String extension = "";
-                    if (originalFilename.contains(".")) {
-                        extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-                    }
-                    String newFilename = "product_" + savedProduct.getId() + "_" + UUID.randomUUID() + extension;
-
-                    // Save file
-                    Path filePath = uploadPath.resolve(newFilename);
-                    System.out.println("Saving file to: " + filePath.toAbsolutePath());
-                    Files.copy(productImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-                    System.out.println("File saved successfully!");
-
-                    // Generate relative URL
-                    String imageUrl = "/uploads/products/" + newFilename;
-                    System.out.println("Image URL: " + imageUrl);
-
-                    // Create and save product image
-                    ProductImage productImageObj = new ProductImage();
-                    productImageObj.setProduct(savedProduct);
-                    productImageObj.setImageUrl(imageUrl);
-                    productImageObj.setUploadedAt(new Timestamp(System.currentTimeMillis()));
-
-                    // Save the product image
-                    ProductImage savedImage = productService.saveProductImage(productImageObj);
-                    System.out.println("Saved product image with ID: " + savedImage.getId() + ", URL: " + savedImage.getImageUrl());
-
-                } catch (Exception e) {
-                    System.out.println("Error processing image: " + e.getMessage());
-                    e.printStackTrace();
-                }
-            } else {
-                System.out.println("No image provided for product " + savedProduct.getId());
-            }
-
-            // Add a success message
-            session.setAttribute("successMessage", "Your product has been successfully submitted for review! An employee has to approve" +
-                    "the listing before it goes on the store");
-
-            // Add flag to force refresh product images
-            session.setAttribute("refreshProducts", true);
-
-            return "redirect:/profile";
-
+            return product;
         } catch (Exception e) {
-            System.out.println("Error creating product: " + e.getMessage());
-            e.printStackTrace();
-            model.addAttribute("error", "There was an error creating your listing: " + e.getMessage());
-
-            // Return to the sell form
-            model.addAttribute("brands", brandService.findAll());
-            model.addAttribute("clothingArticles", clothingArticleService.findAll());
-            model.addAttribute("conditions", productService.findAllProductCondition());
-
-            return "Sell";
+            throw new ProductOperationException("Failed to create product", e);
         }
     }
+
+    private void handleImageUpload(Product savedProduct, MultipartFile productImage) {
+        try {
+            // Create directory if it doesn't exist
+            Path uploadPath = Paths.get("src/main/resources/static/uploads/products");
+            if (Files.notExists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            // Generate unique filename
+            String originalFilename = StringUtils.cleanPath(productImage.getOriginalFilename());
+            String extension = originalFilename.contains(".") ?
+                    originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
+            String newFilename = "product_" + savedProduct.getId() + "_" + UUID.randomUUID() + extension;
+
+            // Save file
+            Path filePath = uploadPath.resolve(newFilename);
+            Files.copy(productImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            // Create and save product image
+            ProductImage productImageObj = new ProductImage();
+            productImageObj.setProduct(savedProduct);
+            productImageObj.setImageUrl("/uploads/products/" + newFilename);
+            productImageObj.setUploadedAt(new Timestamp(System.currentTimeMillis()));
+            productService.saveProductImage(productImageObj);
+
+        } catch (Exception e) {
+            throw new ImageUploadException("Failed to upload and save product image", e);
+        }
+    }
+
+    private String handleError(Model model, String errorMessage) {
+        model.addAttribute("error", errorMessage);
+        model.addAttribute("brands", brandService.findAll());
+        model.addAttribute("categories", clothingArticleService.findAllCategories());
+        model.addAttribute("conditions", productService.findAllProductCondition());
+        return "Sell";
+    }
+
+    // Helper mthods
+
+    private void populateSellForm(Model model, User user){
+        List<Brand> brands = brandService.findAll();
+        List<Category> categories = clothingArticleService.findAllCategories();
+        List<ProductCondition> conditions = productService.findAllProductCondition();
+
+        List<Category> filteredCategories = categories.stream()
+                .filter(category -> !category.getName().equalsIgnoreCase("Designer's"))
+                .collect(Collectors.toList());
+        model.addAttribute("brands", brands);
+        model.addAttribute("categories", categories);
+        model.addAttribute("conditions", conditions);
+
+    }
+
 }

@@ -36,51 +36,26 @@ public class ProfileController {
             return "redirect:/login";
         }
 
-
-
+        // Handle success message
         String successMessage = (String) session.getAttribute("successMessage");
         if (successMessage != null) {
             model.addAttribute("successMessage", successMessage);
             session.removeAttribute("successMessage");
         }
 
-
-        boolean refreshProducts = session.getAttribute("refreshProducts") != null;
-        if (refreshProducts) {
-            session.removeAttribute("refreshProducts");
-        }
+        // Remove refresh flag if present
+        session.removeAttribute("refreshProducts");
 
         try {
             // Fetch user's listings
             List<Product> userProducts = productService.getProductsByUser(user);
-
-
-            System.out.println("User " + user.getUserName() + " has " + userProducts.size() + " products");
-            for (Product product : userProducts) {
-                System.out.println("Product ID: " + product.getId());
-                System.out.println("  Model: " + product.getModelName());
-
-                // Check images
-                if (product.getImages() != null) {
-                    System.out.println("  Number of images: " + product.getImages().size());
-                    for (ProductImage image : product.getImages()) {
-                        System.out.println("    Image URL: " + image.getImageUrl());
-                    }
-                } else {
-                    System.out.println("  Images: NULL");
-                }
-            }
-
             model.addAttribute("products", userProducts);
         } catch (Exception e) {
-            System.out.println("Error loading products: " + e.getMessage());
-            e.printStackTrace();
             model.addAttribute("errorMessage", "Error loading your products: " + e.getMessage());
             model.addAttribute("products", new ArrayList<Product>());
         }
 
         model.addAttribute("user", user);
-
         return "profile";
     }
 

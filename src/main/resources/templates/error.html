@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Error – Gilbert's Shop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @font-face {
+            font-family: 'TheSeaSons';
+            src: url('/Fonts/TheSeaSons.ttf');
+        }
+
+        body {
+            margin: 0;
+            font-family: 'TheSeaSons', sans-serif;
+            background-color: #f8f0e5;
+        }
+
+        /* NAVIGATION */
+        .desktop-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #004224;
+            height: 90px;
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .nav-left,
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 30%;
+        }
+
+        .nav-left {
+            justify-content: flex-start;
+        }
+
+        .nav-right {
+            justify-content: flex-end;
+        }
+
+        .nav-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40%;
+        }
+
+        .desktop-nav a {
+            color: #f8f0e5;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .desktop-nav a:hover {
+            background-color: #423a26;
+            border-radius: 6px;
+            padding: 4px 8px;
+            transition: 0.2s;
+        }
+
+        .search-bar input {
+            height: 30px;
+            padding: 5px;
+            width: 250px;
+            font-size: 16px;
+            border-radius: 35px;
+            font-weight: 500;
+            border: none;
+        }
+
+        /* ERROR CONTAINER */
+        .error-container {
+            max-width: 600px;
+            margin: 150px auto 40px;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .error-icon {
+            font-size: 64px;
+            color: #a02c2c;
+            margin-bottom: 20px;
+        }
+
+        .error-title {
+            font-size: 28px;
+            color: #a02c2c;
+            margin-bottom: 15px;
+        }
+
+        .error-message {
+            font-size: 18px;
+            color: #423a26;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .error-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            transition: 0.2s;
+            border: none;
+            cursor: pointer;
+            font-family: 'TheSeaSons', sans-serif;
+        }
+
+        .btn-primary {
+            background-color: #004224;
+            color: #f8f0e5;
+        }
+
+        .btn-primary:hover {
+            background-color: #423a26;
+        }
+
+        .btn-secondary {
+            background-color: #423a26;
+            color: #f8f0e5;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5c4b3b;
+        }
+
+        /* MOBILE NAVIGATION */
+        .mobile-nav {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .desktop-nav {
+                display: none;
+            }
+
+            .mobile-nav {
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                background-color: #004224;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 60px;
+                z-index: 1000;
+            }
+
+            .mobile-nav a img {
+                height: 24px;
+            }
+
+            .error-container {
+                margin: 40px 20px;
+                padding: 30px 20px;
+            }
+
+            .error-title {
+                font-size: 24px;
+            }
+
+            .error-message {
+                font-size: 16px;
+            }
+
+            .error-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- DESKTOP NAVIGATION -->
+<div class="desktop-nav">
+    <div class="nav-left">
+        <form action="/search" method="get" class="search-bar">
+            <input type="text" name="query" placeholder="Search..." />
+        </form>
+        <a href="/favourites">Favourites</a>
+    </div>
+
+    <div class="nav-center">
+        <a href="/Gilbert"><img src="/Images/Gilbert.png" alt="Home" style="height: 75px;"></a>
+    </div>
+
+    <div class="nav-right">
+        <a href="/profile">Me/Sell</a>
+        <a href="/notifications">Notifications</a>
+    </div>
+</div>
+
+<!-- ERROR CONTENT -->
+<div class="error-container">
+    <div class="error-icon">⚠️</div>
+
+    <h1 class="error-title">Oops! Something went wrong</h1>
+
+    <div class="error-message">
+        <p th:if="${errorMessage}" th:text="${errorMessage}">An unexpected error occurred while processing your request.</p>
+        <p th:unless="${errorMessage}">An unexpected error occurred while processing your request.</p>
+
+        <p>We apologize for the inconvenience. Please try again or contact support if the problem persists.</p>
+    </div>
+
+    <div class="error-actions">
+        <button onclick="history.back()" class="btn btn-secondary">Go Back</button>
+        <a href="/Gilbert" class="btn btn-primary">Return to Home</a>
+        <a href="/profile" class="btn btn-secondary">My Profile</a>
+    </div>
+</div>
+
+<!-- MOBILE NAVIGATION -->
+<div class="mobile-nav">
+    <a href="/Gilbert"><img src="/Images/Home.svg" alt="Home" /></a>
+    <a href="/search"><img src="/Images/Search.svg" alt="Search" /></a>
+    <a href="/favourites"><img src="/Images/Heart.svg" alt="Favourites" /></a>
+    <a href="/profile"><img src="/Images/Profile.svg" alt="Me/Sell" /></a>
+    <a href="/notifications"><img src="/Images/Bell.svg" alt="Notifications" /></a>
+</div>
+
+</body>
+</html>
