@@ -7,6 +7,8 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 @Repository
@@ -36,21 +38,7 @@ public class ClothingArticleRepositoryImpl implements CrudRepository<ClothingArt
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             ClothingArticle article = new ClothingArticle();
-            article.setId(rs.getInt("id"));
-            article.setName(rs.getString("name"));
-
-
-            SubCategory subcategory = new SubCategory();
-            subcategory.setId(rs.getInt("subcategory_id"));
-            subcategory.setName(rs.getString("subcategory_name"));
-
-
-            Category category = new Category();
-            category.setId(rs.getInt("category_id"));
-            subcategory.setCategory(category);
-
-
-            article.setSubcategory(subcategory);
+            fillClothingArticle(article, rs);
 
             return article;
         });
@@ -79,21 +67,7 @@ public class ClothingArticleRepositoryImpl implements CrudRepository<ClothingArt
 
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
             ClothingArticle article = new ClothingArticle();
-            article.setId(rs.getInt("id"));
-            article.setName(rs.getString("name"));
-
-
-            SubCategory subcategory = new SubCategory();
-            subcategory.setId(rs.getInt("subcategory_id"));
-            subcategory.setName(rs.getString("subcategory_name"));
-
-
-            Category category = new Category();
-            category.setId(rs.getInt("category_id"));
-            subcategory.setCategory(category);
-
-
-            article.setSubcategory(subcategory);
+            fillClothingArticle(article, rs);
 
             return article;
         }, id);
@@ -107,26 +81,11 @@ public class ClothingArticleRepositoryImpl implements CrudRepository<ClothingArt
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             ClothingArticle article = new ClothingArticle();
-            article.setId(rs.getInt("id"));
-            article.setName(rs.getString("name"));
-
-
-            SubCategory subcategory = new SubCategory();
-            subcategory.setId(rs.getInt("subcategory_id"));
-            subcategory.setName(rs.getString("subcategory_name"));
-
-
-            Category category = new Category();
-            category.setId(rs.getInt("category_id"));
-            subcategory.setCategory(category);
-
-
-            article.setSubcategory(subcategory);
+            fillClothingArticle(article, rs);
 
             return article;
         }, id);
     }
-
     //Category
 
     public List<Category> findAllCategories() {
@@ -144,12 +103,7 @@ public class ClothingArticleRepositoryImpl implements CrudRepository<ClothingArt
         String sql = "SELECT * FROM subcategory";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             SubCategory subCategory = new SubCategory();
-            subCategory.setId(rs.getInt("id"));
-            subCategory.setName(rs.getString("name"));
-
-            Category category = new Category();
-            category.setId(rs.getInt("category_id"));
-            subCategory.setCategory(category);
+            fillSubcategory(subCategory, rs);
 
             return subCategory;
         });
@@ -158,12 +112,7 @@ public class ClothingArticleRepositoryImpl implements CrudRepository<ClothingArt
         String sql = "SELECT * FROM subcategory WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
             SubCategory subCategory = new SubCategory();
-            subCategory.setId(rs.getInt("id"));
-            subCategory.setName(rs.getString("name"));
-
-            Category category = new Category();
-            category.setId(rs.getInt("category_id"));
-            subCategory.setCategory(category);
+            fillSubcategory(subCategory, rs);
 
             return subCategory;
         }, id);
@@ -174,15 +123,39 @@ public class ClothingArticleRepositoryImpl implements CrudRepository<ClothingArt
         String sql = "SELECT * FROM subcategory WHERE category_id = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             SubCategory subCategory = new SubCategory();
-            subCategory.setId(rs.getInt("id"));
-            subCategory.setName(rs.getString("name"));
-
-            Category category = new Category();
-            category.setId(rs.getInt("category_id"));
-            subCategory.setCategory(category);
+            fillSubcategory(subCategory, rs);
 
             return subCategory;
         }, id);
+    }
+
+    // Helper methods
+
+    private void fillSubcategory(SubCategory subCategory, ResultSet rs) throws SQLException {
+        subCategory.setId(rs.getInt("id"));
+        subCategory.setName(rs.getString("name"));
+
+        Category category = new Category();
+        category.setId(rs.getInt("category_id"));
+        subCategory.setCategory(category);
+    }
+
+    private void fillClothingArticle(ClothingArticle article, ResultSet rs) throws SQLException {
+        article.setId(rs.getInt("id"));
+        article.setName(rs.getString("name"));
+
+
+        SubCategory subcategory = new SubCategory();
+        subcategory.setId(rs.getInt("subcategory_id"));
+        subcategory.setName(rs.getString("subcategory_name"));
+
+
+        Category category = new Category();
+        category.setId(rs.getInt("category_id"));
+        subcategory.setCategory(category);
+
+
+        article.setSubcategory(subcategory);
     }
 
 }

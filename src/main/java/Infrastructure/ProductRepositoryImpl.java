@@ -6,6 +6,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
 
 import java.sql.PreparedStatement;
@@ -22,6 +25,19 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    private void fillProductInsertParameters(Product product, PreparedStatement ps) throws SQLException {
+        ps.setInt(1, product.getBrand().getId());
+        ps.setInt(2, product.getClothingArticle().getId());
+        ps.setInt(3, product.getSeller().getId());
+        ps.setInt(4,1);
+        ps.setInt(5, product.getCondition().getId());
+        ps.setString(6, product.getModelName());
+        ps.setString(7, product.getDescription());
+        ps.setDouble(8, product.getPrice());
+        ps.setTimestamp(9, product.getDateUploaded());
+
+    }
+
 
     @Override
     public Product save(Product product) {
@@ -32,15 +48,7 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setInt(1, product.getBrand().getId());
-            ps.setInt(2, product.getClothingArticle().getId());
-            ps.setInt(3, product.getSeller().getId());
-            ps.setInt(4,1);
-            ps.setInt(5, product.getCondition().getId());
-            ps.setString(6, product.getModelName());
-            ps.setString(7, product.getDescription());
-            ps.setDouble(8, product.getPrice());
-            ps.setTimestamp(9, product.getDateUploaded());
+            fillProductInsertParameters(product, ps);
             return ps;
         }, keyHolder);
 
@@ -82,24 +90,27 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
         populateProductDetails(product);
         return product;
     }
+    private void setProductInfo(Product product, ResultSet rs) throws SQLException {
+        product.setId(rs.getInt("id"));
+        product.setModelName(rs.getString("model_name"));
+        product.setDescription(rs.getString("description"));
+        product.setPrice(rs.getDouble("price"));
+        product.setDateUploaded(rs.getTimestamp("date_uploaded"));
+
+        // Set placeholder objects with IDs
+        setSeller(product, rs.getInt("seller_id"));
+        setBrand(product, rs.getInt("brand_id"));
+        setClothingArticle(product, rs.getInt("clothing_article_id"));
+        setCondition(product, rs.getInt("condition_id"));
+        setStatus(product, rs.getInt("status_id"));
+    }
 
     private Product fetchBasicProductInfo(int id) {
         String sql = "SELECT * FROM product WHERE id = ?";
 
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
             Product p = new Product();
-            p.setId(rs.getInt("id"));
-            p.setModelName(rs.getString("model_name"));
-            p.setDescription(rs.getString("description"));
-            p.setPrice(rs.getDouble("price"));
-            p.setDateUploaded(rs.getTimestamp("date_uploaded"));
-
-            // Set placeholder objects with IDs
-            setSeller(p, rs.getInt("seller_id"));
-            setBrand(p, rs.getInt("brand_id"));
-            setClothingArticle(p, rs.getInt("clothing_article_id"));
-            setCondition(p, rs.getInt("condition_id"));
-            setStatus(p, rs.getInt("status_id"));
+            setProductInfo(p, rs);
 
             return p;
         }, id);
@@ -178,7 +189,7 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
                 }, product.getBrand().getId());
                 product.setBrand(brand);
             } catch (Exception e) {
-                // Handle error silently
+
             }
         }
     }
@@ -195,7 +206,7 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
                 }, product.getClothingArticle().getId());
                 product.setClothingArticle(article);
             } catch (Exception e) {
-                // Handle error silently
+
             }
         }
     }
@@ -253,15 +264,7 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
 
         List<Product> products = jdbcTemplate.query(sql, (rs, rowNum) -> {
             Product product = new Product();
-            product.setId(rs.getInt("id"));
-            product.setModelName(rs.getString("model_name"));
-            product.setDescription(rs.getString("description"));
-            product.setPrice(rs.getDouble("price"));
-            product.setDateUploaded(rs.getTimestamp("date_uploaded"));
-
-            setBrand(product, rs.getInt("brand_id"));
-            setClothingArticle(product, rs.getInt("clothing_article_id"));
-            setCondition(product, rs.getInt("condition_id"));
+            setProductInfo(product, rs);
 
             return product;
         }, user.getId());
