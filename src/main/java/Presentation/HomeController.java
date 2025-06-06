@@ -39,11 +39,14 @@ public class HomeController {
 
     @GetMapping("/category/{categoryId}")
     public String getProductsByCategory(@PathVariable int categoryId, Model model) {
-        List<Product> products = productService.findAllByCategoryId(categoryId);
-        productService.populateImagesForProducts(products);
-        Category category = clothingArticleService.findCategoryById(categoryId);
-
-        populateCategorySearchModel(model, products, category);
+        try {
+            List<Product> products = productService.findAllByCategoryId(categoryId);
+            productService.populateImagesForProducts(products);
+            Category category = clothingArticleService.findCategoryById(categoryId);
+            populateCategorySearchModel(model, products, category);
+        } catch (ProductOperationException| ProductNotfoundException e) {e.getMessage();
+        model.addAttribute("errorMessage", e.getMessage());
+        }
 
         return "search";
     }
@@ -51,30 +54,39 @@ public class HomeController {
     @GetMapping("/subcategory/{subCategoryId}")
     public String getProductsBysubcategory(@PathVariable int subCategoryId, Model model) {
 
-        List<Product> products = productService.findAllBySubCategoryId(subCategoryId);
-        SubCategory subCategory = clothingArticleService.findSubCategoryById(subCategoryId);
-        Category category = clothingArticleService.findCategoryById(subCategory.getCategory().getId());
-        productService.populateImagesForProducts(products);
+        try {
+            List<Product> products = productService.findAllBySubCategoryId(subCategoryId);
+            SubCategory subCategory = clothingArticleService.findSubCategoryById(subCategoryId);
+            Category category = clothingArticleService.findCategoryById(subCategory.getCategory().getId());
+            productService.populateImagesForProducts(products);
 
-        populateSubcategorySearchModel(model, products, category, subCategory);
+            populateSubcategorySearchModel(model, products, category, subCategory);
+        } catch (ProductOperationException| ProductNotfoundException e) {e.getMessage();
+            model.addAttribute("errorMessage", e.getMessage());}
 
         return "search";
     }
 
     @GetMapping("/article/{clothingArticleId}")
     public String getProductsByClothingArticle(@PathVariable int clothingArticleId, Model model) {
-        List<Product> products = productService.findAllByClothingArticleId(clothingArticleId);
-        populateClothingArticleSearchModel(model, products);
+        try {
+            List<Product> products = productService.findAllByClothingArticleId(clothingArticleId);
+            populateClothingArticleSearchModel(model, products);
+            productService.populateImagesForProducts(products);
+        } catch (ProductOperationException| ProductNotfoundException e) {e.getMessage();
+        model.addAttribute("errorMessage", e.getMessage());}
         return "search";
 
     }
     @GetMapping("/search")
     public String searchProducts(@RequestParam(required = false) String query, Model model) {
-        List<Product> products = productService.searchProducts(query);
-        productService.populateImagesForProducts(products);
+        try{
+            List<Product> products = productService.searchProducts(query);
+            productService.populateImagesForProducts(products);
 
-       populateQuerySearchModel(model, products, query);
-
+            populateQuerySearchModel(model, products, query);
+        } catch (ProductOperationException| ProductNotfoundException e) {e.getMessage();
+        model.addAttribute("errorMessage", e.getMessage());}
         return "search";
     }
 

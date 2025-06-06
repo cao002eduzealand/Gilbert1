@@ -1,6 +1,8 @@
 package Infrastructure;
 
 import Domain.*;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -41,28 +43,36 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
 
     @Override
     public Product save(Product product) {
+        if (product==null){throw new ProductNotfoundException("Product couldnt be created properly");}
         String sql = "INSERT INTO product (brand_id, clothing_article_id, seller_id, status_id, condition_id, model_name," +
                 "description, price, date_uploaded) VALUES (?,?,?,?,?,?,?,?,?)";
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        try {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            fillProductInsertParameters(product, ps);
-            return ps;
-        }, keyHolder);
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                fillProductInsertParameters(product, ps);
+                return ps;
+            }, keyHolder);
 
 
-        product.setId(keyHolder.getKey().intValue());
+            product.setId(keyHolder.getKey().intValue());
 
-        return product;
+            return product;
+        } catch (DataAccessException e){
+            throw new ProductOperationException("Product couldn't be saved");
+        }
     }
 
     @Override
     public List<Product> findAll(){
     String sql = "SELECT * FROM product";
-    return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Product.class));
-
+    try {
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Product.class));
+    } catch (DataAccessException e){
+        throw new ProductOperationException("Something went wrong while fetching products");
+    }
     }
 
     @Override
@@ -70,9 +80,12 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
 
         String sql = "UPDATE product SET brand_id=?, clothing_article_id=?, seller_id=?, status_id=?, condition_id=?, model_name=?, description=?, price=?, date_uploaded=?" +
                 "WHERE id=?";
-        jdbcTemplate.update(sql, product.getBrand().getId(), product.getClothingArticle().getId(), product.getSeller().getId(), product.getProductStatus().getId()
-                , product.getCondition().getId(), product.getModelName(), product.getDescription(), product.getPrice(), product.getDateUploaded(), product.getId());
-
+        try {
+            jdbcTemplate.update(sql, product.getBrand().getId(), product.getClothingArticle().getId(), product.getSeller().getId(), product.getProductStatus().getId()
+                    , product.getCondition().getId(), product.getModelName(), product.getDescription(), product.getPrice(), product.getDateUploaded(), product.getId());
+        } catch (DataAccessException e){
+            throw new ProductOperationException("Failed to update product");
+        }
     }
 
     @Override
@@ -86,9 +99,13 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
 
     @Override
     public Product findById(int id) {
-        Product product = fetchBasicProductInfo(id);
-        populateProductDetails(product);
-        return product;
+        try {
+            Product product = fetchBasicProductInfo(id);
+            populateProductDetails(product);
+            return product;
+        } catch (DataAccessException e){
+            throw new ProductOperationException("Something went wrong while fetching product");
+        }
     }
     private void setProductInfo(Product product, ResultSet rs) throws SQLException {
         product.setId(rs.getInt("id"));
@@ -257,26 +274,31 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
 
         product.setImages(images);
     }
-
-    public List<Product> getProductsByUser(User user) {
-        // Fetch basic product information with all related data in one query
-        String sql = "SELECT FROM product WHERE seller_id = ?";
-
-        List<Product> products = jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Product product = new Product();
-            setProductInfo(product, rs);
-
-            return product;
-        }, user.getId());
-
+    private void populateProductsForUser(List<Product> products) {
         for (Product product : products) {
             populateBrandDetails(product);
             populateClothingArticleDetails(product);
             populateConditionDetails(product);
             populateProductImages(product);
-
         }
-        return products;
+    }
+
+    public List<Product> getProductsByUser(User user) {
+        // Fetch basic product information with all related data in one query
+        String sql = "SELECT FROM product WHERE seller_id = ?";
+        try {
+            List<Product> products = jdbcTemplate.query(sql, (rs, rowNum) -> {
+                Product product = new Product();
+                setProductInfo(product, rs);
+
+                return product;
+            }, user.getId());
+
+            populateProductsForUser(products);
+            return products;
+        } catch (DataAccessException e) {
+            throw new ProductNotfoundException("Failed to find your products");
+        }
     }
 
     public List<Product> findAllByBrand(Brand brand) {
@@ -306,9 +328,6 @@ public class ProductRepositoryImpl implements CrudRepository<Product> {
         }
         return listedStatusId;
     }
-
-
-
     public List<Product> findAllByCategoryId(int categoryId) {
         int statusId = getListedStatusId();
         if (statusId == -1) return Collections.emptyList();
